@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZernoFi — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────────────── */
+:root{
+  --black:   #080705;
+  --ink:     #0E0C0A;
+  --surface: #131109;
+  --card:    #191510;
+  --card2:   #201B14;
+  --card3:   #26201A;
+  --border:  rgba(212,168,67,.1);
+  --border2: rgba(212,168,67,.2);
+  --border3: rgba(212,168,67,.35);
+  --gold:    #D4A843;
+  --gold2:   #E8BA55;
+  --gold-dim:#8A6C25;
+  --gold-bg: rgba(212,168,67,.07);
+  --gold-bg2:rgba(212,168,67,.13);
+  --green:   #1E4D2E;
+  --green2:  #2A6040;
+  --green3:  #4CAF7D;
+  --green-bg:rgba(44,96,64,.18);
+  --green-bd:rgba(44,96,64,.35);
+  --red:     #8B3A1A;
+  --red-bg:  rgba(139,58,26,.12);
+  --red-col: #E05D3A;
+  --blue:    #1E3A5F;
+  --blue-col:#60BDFF;
+  --blue-bg: rgba(96,189,255,.08);
+  --text:    #EAE4D8;
+  --text2:   #BFB8AC;
+  --muted:   #6B6560;
+  --muted2:  #4A4540;
+  --sidebar: 240px;
+  --topbar:  58px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;scroll-behavior:smooth;}
+body{
+  background:var(--black);color:var(--text);
+  font-family:'Sora',sans-serif;font-size:15px;
+  line-height:1.6;overflow-x:hidden;height:100%;
+}
+/* grain */
+body::after{
+  content:'';position:fixed;inset:0;z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:160px;opacity:.02;pointer-events:none;
+}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────────── */
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;
+  background:var(--ink);
+  border-right:.5px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;z-index:50;
+}
+.sidebar-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:1.25rem 1.4rem;
+  border-bottom:.5px solid var(--border);
+  text-decoration:none;
+}
+.logo-badge{
+  width:30px;height:30px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dim));
+  border-radius:7px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+}
+.logo-name{font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-.01em;}
+.sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto;}
+.nav-section-label{
+  font-family:'JetBrains Mono',monospace;font-size:.57rem;
+  color:var(--muted2);text-transform:uppercase;letter-spacing:.12em;
+  padding:.5rem 1.4rem .3rem;
+}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.6rem 1.4rem;font-size:.83rem;font-weight:500;
+  color:var(--muted);transition:color .2s,background .2s;
+  border-radius:0;position:relative;cursor:pointer;
+  border:none;background:none;width:100%;text-align:left;
+}
+.nav-item:hover{color:var(--text);background:var(--gold-bg);}
+.nav-item.active{
+  color:var(--gold);background:var(--gold-bg2);
+  border-right:2px solid var(--gold);
+}
+.nav-icon{font-size:1rem;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;background:var(--green-bg);color:var(--green3);
+  border:.5px solid var(--green-bd);
+  padding:.1rem .45rem;border-radius:100px;
+}
+/* sidebar bottom */
+.sidebar-bottom{
+  padding:1rem;border-top:.5px solid var(--border);
+}
+.sb-wallet{
+  background:var(--card2);border:.5px solid var(--border);
+  border-radius:10px;padding:.75rem;
+}
+.sbw-top{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;}
+.sbw-avatar{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  overflow:hidden;border:.5px solid var(--border2);
+}
+.sbw-avatar canvas{width:100%;height:100%;}
+.sbw-addr{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text2);}
+.sbw-actions{display:flex;gap:.4rem;}
+.sbw-btn{
+  flex:1;font-size:.65rem;font-family:'JetBrains Mono',monospace;
+  color:var(--muted);background:var(--card3);
+  border:.5px solid var(--border);border-radius:5px;
+  padding:.3rem .5rem;transition:color .2s,border-color .2s;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+}
+.sbw-btn:hover{color:var(--gold);border-color:var(--border2);}
+.sbw-btn.danger:hover{color:var(--red-col);}
+
+/* ─── MAIN ───────────────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* topbar */
+.topbar{
+  height:var(--topbar);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;
+  background:rgba(8,7,5,.9);backdrop-filter:blur(16px);
+  border-bottom:.5px solid var(--border);
+}
+.tb-left{display:flex;align-items:center;gap:.5rem;}
+.tb-title{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-.02em;}
+.tb-sub{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);}
+.tb-right{display:flex;align-items:center;gap:.75rem;}
+.refresh-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;
+  color:var(--muted);background:var(--card2);
+  border:.5px solid var(--border);border-radius:7px;
+  padding:.4rem .8rem;transition:all .2s;
+}
+.refresh-btn:hover{color:var(--gold);border-color:var(--border2);}
+.refresh-btn .spin{display:inline-block;transition:transform .6s;}
+.refresh-btn.spinning .spin{animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.live-badge{
+  display:flex;align-items:center;gap:5px;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  color:var(--green3);background:var(--green-bg);
+  border:.5px solid var(--green-bd);
+  padding:.35rem .75rem;border-radius:100px;
+}
+.live-dot{width:5px;height:5px;background:var(--green3);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* content area */
+.content{flex:1;overflow-y:auto;padding:2rem;display:flex;flex-direction:column;gap:2rem;}
+
+/* ─── METRICS GRID ───────────────────────────────────────────────────── */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.metric-card{
+  background:var(--card);border:.5px solid var(--border);
+  border-radius:14px;padding:1.25rem 1.4rem;
+  transition:border-color .2s;position:relative;overflow:hidden;
+}
+.metric-card:hover{border-color:var(--border2);}
+.metric-card::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--accent-color,var(--gold));opacity:.4;
+}
+.mc-icon{font-size:1.1rem;margin-bottom:.75rem;opacity:.8;}
+.mc-label{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.3rem;
+}
+.mc-val{font-size:1.55rem;font-weight:800;color:var(--text);letter-spacing:-.03em;line-height:1;}
+.mc-val .currency{font-size:.85rem;font-weight:500;color:var(--muted);margin-right:2px;}
+.mc-val .token{font-size:.75rem;color:var(--muted);font-weight:500;margin-left:2px;font-family:'JetBrains Mono',monospace;}
+.mc-change{
+  margin-top:.4rem;font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;color:var(--green3);
+}
+
+/* ─── SECTION HEADER ─────────────────────────────────────────────────── */
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.sh-left{display:flex;flex-direction:column;gap:.15rem;}
+.sh-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;}
+.sh-title{font-size:1.1rem;font-weight:700;letter-spacing:-.02em;}
+.sh-link{
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  color:var(--muted);transition:color .2s;
+  display:flex;align-items:center;gap:4px;
+}
+.sh-link:hover{color:var(--gold);}
+
+/* ─── POOL CARDS ─────────────────────────────────────────────────────── */
+.pools-stack{display:flex;flex-direction:column;gap:1rem;}
+.pool-card{
+  background:var(--card);border:.5px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  transition:border-color .2s;
+}
+.pool-card:hover{border-color:var(--border2);}
+.pool-card.wheat{border-color:rgba(212,168,67,.15);}
+.pool-card.snail{border-color:rgba(76,175,125,.12);}
+.pc-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 1.4rem;border-bottom:.5px solid var(--border);
+}
+.pc-identity{display:flex;align-items:center;gap:.85rem;}
+.pc-pool-icon{font-size:1.8rem;}
+.pc-pool-name{font-size:1rem;font-weight:700;margin-bottom:.1rem;}
+.pc-pool-sub{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);}
+.pc-status-badge{
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  text-transform:uppercase;letter-spacing:.08em;
+  padding:.25rem .7rem;border-radius:100px;
+}
+.badge-active{color:var(--green3);background:var(--green-bg);border:.5px solid var(--green-bd);}
+.badge-pending{color:var(--gold);background:var(--gold-bg);border:.5px solid var(--border2);}
+.badge-completed{color:var(--muted);background:var(--card2);border:.5px solid var(--border);}
+/* pool body */
+.pc-body{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:1px;background:var(--border);}
+.pc-col{background:var(--card);padding:1.1rem 1.4rem;}
+/* stats col */
+.pc-stats-inner{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;}
+.pcs-item{}
+.pcs-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;}
+.pcs-val{font-size:1.1rem;font-weight:700;letter-spacing:-.02em;}
+.pcs-val.gold{color:var(--gold);}
+.pcs-val.green{color:var(--green3);}
+/* timer col */
+.timer-col-inner{}
+.timer-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem;}
+.timer-display{
+  font-family:'JetBrains Mono',monospace;font-size:1.3rem;
+  font-weight:600;color:var(--text);letter-spacing:.02em;margin-bottom:.6rem;
+  cursor:default;
+}
+.timer-display.urgent{color:var(--gold2);animation:urgentPulse 2s ease infinite;}
+@keyframes urgentPulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.prog-wrap{margin-bottom:.5rem;}
+.prog-info{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);margin-bottom:.3rem;}
+.prog-bar{height:4px;background:rgba(212,168,67,.08);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;transition:width 1.5s ease;}
+.prog-fill.gold{background:linear-gradient(90deg,var(--gold-dim),var(--gold));}
+.prog-fill.green{background:linear-gradient(90deg,var(--green2),var(--green3));}
+.payout-date{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);}
+/* actions col */
+.pc-actions-inner{display:flex;flex-direction:column;gap:.5rem;justify-content:center;}
+.expected-payout{
+  background:var(--card2);border:.5px solid var(--border);
+  border-radius:8px;padding:.7rem .85rem;margin-bottom:.4rem;
+}
+.ep-label{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem;}
+.ep-val{font-size:1.05rem;font-weight:700;color:var(--green3);letter-spacing:-.02em;}
+.pc-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:.55rem 1rem;border-radius:8px;font-size:.78rem;font-weight:600;
+  border:none;transition:all .2s;
+}
+.pc-btn-primary{background:var(--gold-bg2);color:var(--gold);border:.5px solid var(--border2);}
+.pc-btn-primary:hover{background:rgba(212,168,67,.2);border-color:var(--border3);}
+.pc-btn-ghost{background:var(--card2);color:var(--muted);border:.5px solid var(--border);}
+.pc-btn-ghost:hover{color:var(--text);border-color:var(--border2);}
+.pc-btn-green{background:var(--green-bg);color:var(--green3);border:.5px solid var(--green-bd);}
+.pc-btn-green:hover{background:rgba(76,175,125,.15);}
+
+/* ─── EMPTY STATE ────────────────────────────────────────────────────── */
+.empty-state{
+  background:var(--card);border:.5px dashed var(--border2);
+  border-radius:16px;padding:3.5rem 2rem;text-align:center;
+}
+.es-icon{font-size:2.5rem;margin-bottom:1rem;opacity:.4;}
+.es-title{font-size:1rem;font-weight:700;color:var(--text2);margin-bottom:.4rem;}
+.es-sub{font-size:.83rem;color:var(--muted);margin-bottom:1.5rem;}
+.es-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--gold-bg2);color:var(--gold);
+  border:.5px solid var(--border2);border-radius:9px;
+  padding:.65rem 1.4rem;font-size:.82rem;font-weight:600;
+  transition:all .2s;
+}
+.es-btn:hover{background:rgba(212,168,67,.2);}
+
+/* ─── TOKEN SECTION ──────────────────────────────────────────────────── */
+.token-panel{
+  background:var(--card);border:.5px solid var(--border);
+  border-radius:16px;overflow:hidden;
+}
+.tp-inner{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);}
+.tp-col{background:var(--card);padding:1.4rem;}
+.tp-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.6rem;}
+.tp-val{font-size:1.5rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.4rem;}
+.tp-val.gold{color:var(--gold);}
+.tp-sub{font-size:.75rem;color:var(--muted);}
+/* staking status */
+.stake-status{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.3rem .75rem;border-radius:100px;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  margin-bottom:.85rem;
+}
+.stake-status.staked{color:var(--green3);background:var(--green-bg);border:.5px solid var(--green-bd);}
+.stake-status.unstaked{color:var(--muted);background:var(--card2);border:.5px solid var(--border);}
+/* boost indicator */
+.boost-ring{
+  display:flex;align-items:center;gap:.6rem;margin-bottom:.85rem;
+}
+.boost-circle{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;
+  border:2px solid;flex-shrink:0;
+}
+.boost-circle.active{color:var(--green3);border-color:var(--green3);background:var(--green-bg);}
+.boost-circle.inactive{color:var(--muted);border-color:var(--border);background:var(--card2);}
+.boost-text{}
+.boost-title{font-size:.88rem;font-weight:700;margin-bottom:.1rem;}
+.boost-desc{font-size:.75rem;color:var(--muted);}
+.tp-ctas{display:flex;flex-direction:column;gap:.5rem;margin-top:auto;}
+.tp-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:.65rem 1rem;border-radius:9px;font-size:.8rem;font-weight:600;
+  border:none;transition:all .2s;text-align:center;
+}
+.tp-btn-primary{background:var(--gold-bg2);color:var(--gold);border:.5px solid var(--border2);}
+.tp-btn-primary:hover{background:rgba(212,168,67,.2);}
+.tp-btn-jup{background:var(--card2);color:var(--text2);border:.5px solid var(--border);}
+.tp-btn-jup:hover{border-color:var(--border2);}
+.ext-icon{font-size:.65rem;opacity:.5;}
+
+/* ─── TX TABLE ───────────────────────────────────────────────────────── */
+.tx-panel{
+  background:var(--card);border:.5px solid var(--border);
+  border-radius:16px;overflow:hidden;
+}
+.tx-table-wrap{overflow-x:auto;}
+.tx-table{width:100%;border-collapse:collapse;}
+.tx-table th{
+  padding:.75rem 1rem;font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--muted);text-align:left;
+  background:var(--card2);border-bottom:.5px solid var(--border);
+  white-space:nowrap;
+}
+.tx-table td{
+  padding:.75rem 1rem;font-size:.8rem;color:var(--text2);
+  border-bottom:.5px solid rgba(212,168,67,.05);
+  white-space:nowrap;
+}
+.tx-table tr:last-child td{border-bottom:none;}
+.tx-table tr:hover td{background:var(--gold-bg);}
+.tx-date{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);}
+.tx-action-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  padding:.2rem .6rem;border-radius:4px;font-weight:500;
+}
+.tx-deposit{color:var(--blue-col);background:var(--blue-bg);}
+.tx-reward{color:var(--green3);background:var(--green-bg);}
+.tx-uaagro{color:var(--gold);background:var(--gold-bg);}
+.tx-stake{color:var(--text2);background:var(--card2);}
+.tx-hash a{
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;
+  color:var(--muted);transition:color .2s;
+  display:inline-flex;align-items:center;gap:3px;
+}
+.tx-hash a:hover{color:var(--gold);}
+.tx-amount{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;}
+.tx-amount.pos{color:var(--green3);}
+.tx-amount.neg{color:var(--text2);}
+.tx-amount.token{color:var(--gold);}
+.load-more{
+  display:block;width:100%;padding:.85rem;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;
+  color:var(--muted);background:var(--card2);
+  border-top:.5px solid var(--border);transition:color .2s;cursor:pointer;border:none;
+}
+.load-more:hover{color:var(--gold);}
+
+/* ─── SKELETON LOADERS ───────────────────────────────────────────────── */
+@keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+.skeleton{
+  background:linear-gradient(90deg, var(--card2) 25%, var(--card3) 50%, var(--card2) 75%);
+  background-size:800px 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:6px;
+}
+.sk-metric{height:80px;}
+.sk-pool{height:140px;border-radius:14px;}
+.sk-row{height:44px;border-radius:4px;margin-bottom:.5rem;}
+
+/* ─── TOAST ──────────────────────────────────────────────────────────── */
+.toast-container{
+  position:fixed;bottom:1.5rem;right:1.5rem;z-index:10000;
+  display:flex;flex-direction:column;gap:.5rem;align-items:flex-end;
+}
+.toast{
+  background:var(--card2);border:.5px solid var(--border2);
+  border-radius:12px;padding:1rem 1.25rem;
+  max-width:340px;box-shadow:0 20px 40px rgba(0,0,0,.6);
+  animation:slideIn .35s cubic-bezier(.2,1,.3,1) both;
+  cursor:pointer;
+}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0;}to{transform:none;opacity:1;}}
+.toast.removing{animation:slideOut .3s ease forwards;}
+@keyframes slideOut{to{transform:translateX(120%);opacity:0;}}
+.toast-inner{display:flex;align-items:flex-start;gap:.75rem;}
+.toast-icon{font-size:1.2rem;flex-shrink:0;}
+.toast-title{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.2rem;}
+.toast-body{font-size:.78rem;color:var(--muted);line-height:1.5;}
+.toast-close{margin-left:auto;font-size:.7rem;color:var(--muted);flex-shrink:0;}
+
+/* ─── TOOLTIP ────────────────────────────────────────────────────────── */
+[data-tip]{position:relative;}
+[data-tip]:hover::after{
+  content:attr(data-tip);
+  position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:var(--card3);border:.5px solid var(--border2);
+  color:var(--text2);font-size:.68rem;font-family:'JetBrains Mono',monospace;
+  padding:.3rem .65rem;border-radius:6px;white-space:nowrap;
+  pointer-events:none;z-index:100;
+  box-shadow:0 8px 20px rgba(0,0,0,.5);
+}
+[data-tip]:hover::before{
+  content:'';position:absolute;bottom:calc(100% + 1px);left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--border2);
+  pointer-events:none;z-index:101;
+}
+
+/* ─── WALLET NOT CONNECTED ───────────────────────────────────────────── */
+.not-connected{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:2rem;
+}
+.nc-card{
+  background:var(--card);border:.5px solid var(--border2);
+  border-radius:20px;padding:3.5rem;text-align:center;max-width:440px;
+}
+.nc-glow{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--gold-bg2);border:.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 1.5rem;
+}
+.nc-title{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.5rem;}
+.nc-sub{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:2rem;}
+.nc-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--gold);color:var(--black);
+  padding:.85rem 2rem;border-radius:10px;font-weight:700;
+  font-size:.9rem;transition:background .2s;border:none;cursor:pointer;
+}
+.nc-btn:hover{background:var(--gold2);}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
+@media(max-width:1100px){.metrics-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .pc-body{grid-template-columns:1fr;}
+  .tp-inner{grid-template-columns:1fr;}
+  .content{padding:1.25rem;}
+  .metrics-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:580px){.metrics-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ══════════ TOAST CONTAINER ══════════ -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- ══════════ APP SHELL ══════════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <a href="/" class="sidebar-logo">
+      <div class="logo-badge">🌾</div>
+      <span class="logo-name">ZERNOFI</span>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Portfolio</div>
+      <button class="nav-item active" onclick="showSection('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="window.location='#pools'">
+        <span class="nav-icon">🌾</span> My Pools
+        <span class="nav-badge">2</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">💰</span> Rewards
+      </button>
+      <div class="nav-section-label" style="margin-top:.75rem;">Token</div>
+      <button class="nav-item">
+        <span class="nav-icon">⚡</span> $UAAGRO
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">🗳️</span> Governance
+      </button>
+      <div class="nav-section-label" style="margin-top:.75rem;">Platform</div>
+      <button class="nav-item" onclick="window.location='index.html#pools'">
+        <span class="nav-icon">🔍</span> Explore Pools
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">📋</span> History
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+
+    <!-- WALLET WIDGET IN SIDEBAR -->
+    <div class="sidebar-bottom" id="sb-wallet-wrap">
+      <div class="sb-wallet">
+        <div class="sbw-top">
+          <div class="sbw-avatar"><canvas id="identicon-canvas" width="30" height="30"></canvas></div>
+          <span class="sbw-addr mono" id="sb-addr">7xKp...3mQr</span>
+        </div>
+        <div class="sbw-actions">
+          <button class="sbw-btn" onclick="copyAddr()" title="Copy address">📋 Copy</button>
+          <a class="sbw-btn" href="https://explorer.solana.com" target="_blank" title="View in Explorer">🔗 Explorer</a>
+          <button class="sbw-btn danger" onclick="disconnect()" title="Disconnect">✕</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ─────────────────────────────────────────────────────── -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="tb-left">
+        <div>
+          <div class="tb-title">Dashboard</div>
+          <div class="tb-sub mono" id="tb-time">Loading...</div>
+        </div>
+      </div>
+      <div class="tb-right">
+        <button class="refresh-btn" id="refresh-btn" onclick="refreshData()">
+          <span class="spin">↻</span> Refresh
+        </button>
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          Solana Mainnet
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT: NOT CONNECTED STATE (hidden when connected) -->
+    <div class="not-connected" id="not-connected-view" style="display:none;">
+      <div class="nc-card">
+        <div class="nc-glow">🌾</div>
+        <div class="nc-title">Connect Your Wallet</div>
+        <div class="nc-sub">Link your Phantom, Backpack, or Solflare wallet to see your portfolio, track rewards, and manage your agricultural investments.</div>
+        <button class="nc-btn" onclick="simulateConnect()">
+          🔗 Connect Wallet
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT: DASHBOARD (visible when connected) -->
+    <div class="content" id="dashboard-content">
+
+      <!-- ── METRICS ── -->
+      <div>
+        <div class="section-head">
+          <div class="sh-left">
+            <div class="sh-label">Portfolio Overview</div>
+            <div class="sh-title">Your Investment Summary</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);" id="last-updated">
+            Updated just now
+          </div>
+        </div>
+        <div class="metrics-grid" id="metrics-grid">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- ── MY POOLS ── -->
+      <div id="pools-section">
+        <div class="section-head">
+          <div class="sh-left">
+            <div class="sh-label">Active Positions</div>
+            <div class="sh-title">My Pools</div>
+          </div>
+          <a href="index.html#pools" class="sh-link">Explore more pools ↗</a>
+        </div>
+        <div class="pools-stack" id="pools-stack">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- ── UAAGRO TOKEN ── -->
+      <div>
+        <div class="section-head">
+          <div class="sh-left">
+            <div class="sh-label">Governance Token</div>
+            <div class="sh-title">$UAAGRO Balance</div>
+          </div>
+          <a href="https://jup.ag" target="_blank" class="sh-link">Trade on Jupiter ↗</a>
+        </div>
+        <div class="token-panel">
+          <div class="tp-inner">
+            <!-- Balance -->
+            <div class="tp-col">
+              <div class="tp-label">Current Balance</div>
+              <div class="tp-val gold">1,240</div>
+              <div class="tp-sub">$UAAGRO tokens</div>
+              <div style="margin-top:.85rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);">
+                ≈ $124.00 USDC<br>
+                <span style="color:var(--green3);">↑ +48 earned this cycle</span>
+              </div>
+            </div>
+            <!-- Staking Status -->
+            <div class="tp-col">
+              <div class="tp-label">Staking Status</div>
+              <div class="stake-status staked">● Staked</div>
+              <div class="boost-ring">
+                <div class="boost-circle active" data-tip="Your APY is boosted by +3% across all pools">+3%</div>
+                <div class="boost-text">
+                  <div class="boost-title">Yield Boost Active</div>
+                  <div class="boost-desc">All pools earn +3% APY</div>
+                </div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);">
+                1,240 $UAAGRO staked<br>
+                Unstake available: 14 days
+              </div>
+            </div>
+            <!-- CTAs -->
+            <div class="tp-col" style="display:flex;flex-direction:column;gap:.6rem;justify-content:center;">
+              <div class="tp-label">Actions</div>
+              <button class="tp-btn tp-btn-primary">⚡ Stake More $UAAGRO</button>
+              <button class="tp-btn tp-btn-ghost" onclick="window.open('https://jup.ag','_blank')" style="background:var(--card2);color:var(--text2);border:.5px solid var(--border);">
+                🔁 Trade on Jupiter <span class="ext-icon">↗</span>
+              </button>
+              <div style="font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:.4rem;background:var(--card3);border-radius:6px;border:.5px solid var(--border);">
+                Min. stake for Boost: <span style="color:var(--gold);">1,000 $UAAGRO</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRANSACTION HISTORY ── -->
+      <div>
+        <div class="section-head">
+          <div class="sh-left">
+            <div class="sh-label">On-Chain Activity</div>
+            <div class="sh-title">Transaction History</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);">Solscan verified</div>
+        </div>
+        <div class="tx-panel">
+          <div class="tx-table-wrap">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Action</th>
+                  <th>Pool</th>
+                  <th>Amount</th>
+                  <th>Tx Hash</th>
+                </tr>
+              </thead>
+              <tbody id="tx-tbody">
+                <!-- rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+          <button class="load-more" onclick="loadMoreTx()">Load more transactions ↓</button>
+        </div>
+      </div>
+
+      <!-- bottom spacer -->
+      <div style="height:1rem;"></div>
+    </div><!-- /dashboard-content -->
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ════════════════════════ JAVASCRIPT ══════════════════════════════════ -->
+<script>
+/* ─── STATE ──────────────────────────────────────────────────────────── */
+const STATE = {
+  connected: true,   // toggle to false to see "not connected" screen
+  wallet: '7xKpR9mFdT2uAqLsNbKjW3mQr',
+  refreshInterval: null,
+  txPage: 1,
+};
+
+/* ─── MOCK DATA ──────────────────────────────────────────────────────── */
+const POOLS = [
+  {
+    id: 'wheat',
+    icon: '🌾',
+    name: 'Premium Winter Wheat',
+    sub: 'Kyiv Region, Ukraine · Harvest Q3 2026',
+    status: 'active',
+    invested: 1500,
+    entry: '12.03.2025',
+    apy: 18.5,
+    uaagroEarned: 840,
+    pctDone: 80,
+    payoutDate: new Date(Date.now() + 5 * 24*60*60*1000), // 5 days — triggers urgent toast
+    expectedPayout: 181.5,
+    term: '9 months',
+    poolFill: 12,
+  },
+  {
+    id: 'snail',
+    icon: '🐌',
+    name: 'Escargot Farm Expansion',
+    sub: 'Lviv Region, Ukraine · Export Grade · EU Market',
+    status: 'active',
+    invested: 900,
+    entry: '15.04.2025',
+    apy: 24.0,
+    uaagroEarned: 400,
+    pctDone: 42,
+    payoutDate: new Date(Date.now() + 142 * 24*60*60*1000), // 142 days
+    expectedPayout: 108,
+    term: '12 months',
+    poolFill: 17,
+  }
+];
+
+const TRANSACTIONS = [
+  { date:'28.04.2025', action:'deposit',  pool:'Wheat',   amount:'+$1,500 USDC',  type:'neg',   hash:'4tKmR...8xPq' },
+  { date:'28.04.2025', action:'uaagro',   pool:'Wheat',   amount:'+840 UAAGRO',   type:'token', hash:'7hNqL...2mFd' },
+  { date:'15.04.2025', action:'deposit',  pool:'Escargot',amount:'+$900 USDC',    type:'neg',   hash:'9pQrS...5kLm' },
+  { date:'15.04.2025', action:'uaagro',   pool:'Escargot',amount:'+400 UAAGRO',   type:'token', hash:'2wXcT...7nBv' },
+  { date:'12.03.2025', action:'stake',    pool:'—',       amount:'1,240 UAAGRO',  type:'neg',   hash:'6yHkP...3aQs' },
+  { date:'01.03.2025', action:'reward',   pool:'Wheat',   amount:'+$48 USDC',     type:'pos',   hash:'1mRzW...9cKj' },
+];
+
+/* ─── ACTION LABELS ──────────────────────────────────────────────────── */
+const ACTION_META = {
+  deposit: { label:'Deposit',        cls:'tx-deposit', icon:'⬇️' },
+  reward:  { label:'Reward Claimed', cls:'tx-reward',  icon:'🎁' },
+  uaagro:  { label:'UAAGRO Earned',  cls:'tx-uaagro',  icon:'⚡' },
+  stake:   { label:'Stake',          cls:'tx-stake',   icon:'🔒' },
+  unstake: { label:'Unstake',        cls:'tx-stake',   icon:'🔓' },
+};
+
+/* ─── INIT ───────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  if (STATE.connected) {
+    initDashboard();
+  } else {
+    showNotConnected();
+  }
+
+  // auto-refresh every 30s
+  STATE.refreshInterval = setInterval(() => {
+    updateLastUpdated();
+  }, 30000);
+});
+
+function initDashboard() {
+  document.getElementById('not-connected-view').style.display = 'none';
+  document.getElementById('dashboard-content').style.display = 'flex';
+
+  generateIdenticon(STATE.wallet);
+  document.getElementById('sb-addr').textContent = shortAddr(STATE.wallet);
+
+  renderMetrics();
+  renderPools();
+  renderTx();
+  checkUpcomingPayouts();
+}
+
+function showNotConnected() {
+  document.getElementById('not-connected-view').style.display = 'flex';
+  document.getElementById('dashboard-content').style.display = 'none';
+}
+
+/* ─── CLOCK ──────────────────────────────────────────────────────────── */
+function updateClock() {
+  const now = new Date();
+  const opts = { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+  document.getElementById('tb-time').textContent =
+    now.toLocaleString('en-US', opts) + ' · Solana Slot #' + Math.floor(now.getTime() / 400).toLocaleString();
+}
+
+/* ─── METRICS RENDER ─────────────────────────────────────────────────── */
+function renderMetrics() {
+  const totalInvested = POOLS.reduce((s,p) => s + p.invested, 0);
+  const annualYield   = POOLS.reduce((s,p) => s + p.invested * p.apy / 100, 0);
+  const uaagroTotal   = POOLS.reduce((s,p) => s + p.uaagroEarned, 0);
+  const earned        = 48;
+
+  const metrics = [
+    { icon:'💵', label:'Total Invested', val:`$${totalInvested.toLocaleString()}`, suffix:'USDC', change:null, accent:'var(--gold)', key:'invest' },
+    { icon:'📈', label:'Expected Annual Yield', val:`$${Math.round(annualYield).toLocaleString()}`, suffix:'USDC / yr', change:'+2.8% vs last month', accent:'var(--green3)', key:'yield' },
+    { icon:'⚡', label:'$UAAGRO Balance', val:(uaagroTotal+400).toLocaleString(), suffix:'UAAGRO', change:'+48 this cycle', accent:'var(--gold)', key:'token' },
+    { icon:'🏆', label:'Total Earned', val:`$${earned}`, suffix:'USDC', change:'Since inception', accent:'var(--blue-col)', key:'earned' },
+  ];
+
+  const grid = document.getElementById('metrics-grid');
+  grid.innerHTML = '';
+  metrics.forEach((m, i) => {
+    const div = document.createElement('div');
+    div.className = 'metric-card anim-in';
+    div.style.cssText = `--accent-color:${m.accent};animation-delay:${i*.07}s;`;
+    div.innerHTML = `
+      <div class="mc-icon">${m.icon}</div>
+      <div class="mc-label">${m.label}</div>
+      <div class="mc-val">${m.val}<span class="token">${m.suffix}</span></div>
+      ${m.change ? `<div class="mc-change">↑ ${m.change}</div>` : ''}
+    `;
+    grid.appendChild(div);
+    setTimeout(() => div.style.opacity = 1, i * 70);
+  });
+}
+
+/* ─── POOL RENDER ────────────────────────────────────────────────────── */
+function renderPools() {
+  const stack = document.getElementById('pools-stack');
+  stack.innerHTML = '';
+
+  if (!POOLS.length) {
+    stack.innerHTML = `
+      <div class="empty-state">
+        <div class="es-icon">🌱</div>
+        <div class="es-title">No Active Investments</div>
+        <div class="es-sub">You haven't invested in any pool yet. Browse available pools and start earning real USDC yield from Ukrainian agriculture.</div>
+        <a href="index.html#pools" class="es-btn">Explore Active Pools →</a>
+      </div>`;
+    return;
+  }
+
+  POOLS.forEach(pool => {
+    const card = document.createElement('div');
+    card.className = `pool-card ${pool.id}`;
+    card.innerHTML = `
+      <div class="pc-header">
+        <div class="pc-identity">
+          <div class="pc-pool-icon">${pool.icon}</div>
+          <div>
+            <div class="pc-pool-name">${pool.name}</div>
+            <div class="pc-pool-sub">${pool.sub}</div>
+          </div>
+        </div>
+        <span class="pc-status-badge badge-${pool.status}">${pool.status.toUpperCase()}</span>
+      </div>
+      <div class="pc-body">
+
+        <!-- STATS -->
+        <div class="pc-col">
+          <div class="pc-stats-inner">
+            <div class="pcs-item">
+              <div class="pcs-label">Invested</div>
+              <div class="pcs-val">$${pool.invested.toLocaleString()}</div>
+            </div>
+            <div class="pcs-item">
+              <div class="pcs-label">Target APY</div>
+              <div class="pcs-val ${pool.id === 'snail' ? 'green' : 'gold'}">${pool.apy}%</div>
+            </div>
+            <div class="pcs-item">
+              <div class="pcs-label">Entry Date</div>
+              <div class="pcs-val" style="font-size:.85rem;color:var(--text2);">${pool.entry}</div>
+            </div>
+            <div class="pcs-item">
+              <div class="pcs-label">$UAAGRO Earned</div>
+              <div class="pcs-val gold" style="font-size:.95rem;">${pool.uaagroEarned}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIMER -->
+        <div class="pc-col">
+          <div class="timer-label" data-tip="Date of the first USDC dividend payout">
+            ⏳ Time to Payout
+          </div>
+          <div class="timer-display ${daysUntil(pool.payoutDate) <= 7 ? 'urgent' : ''}"
+               id="timer-${pool.id}"
+               data-tip="First USDC dividend payout date">
+            --:--:--
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-info">
+              <span>Season Progress</span>
+              <span style="color:${pool.id==='snail'?'var(--green3)':'var(--gold)'};">${pool.pctDone}% complete</span>
+            </div>
+            <div class="prog-bar">
+              <div class="prog-fill ${pool.id === 'snail' ? 'green' : 'gold'}"
+                   style="width:${pool.pctDone}%"></div>
+            </div>
+          </div>
+          <div class="payout-date">📅 Payout: ${formatDate(pool.payoutDate)}</div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="pc-col">
+          <div class="expected-payout">
+            <div class="ep-label">Expected Payout</div>
+            <div class="ep-val">+$${pool.expectedPayout.toLocaleString()} USDC</div>
+          </div>
+          <button class="pc-btn pc-btn-primary" onclick="window.location='index.html#pools'">
+            📊 Pool Details
+          </button>
+          <button class="pc-btn pc-btn-green" onclick="window.location='index.html#pools'">
+            ➕ Add Investment
+          </button>
+        </div>
+
+      </div>
+    `;
+    stack.appendChild(card);
+
+    // start live countdown
+    startCountdown(pool.id, pool.payoutDate);
+  });
+}
+
+/* ─── COUNTDOWN ──────────────────────────────────────────────────────── */
+function startCountdown(poolId, payoutDate) {
+  function tick() {
+    const el = document.getElementById(`timer-${poolId}`);
+    if (!el) return;
+    const diff = payoutDate - Date.now();
+    if (diff <= 0) {
+      el.textContent = '🎉 Payout Today!';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000)  / 60000);
+    const s = Math.floor((diff % 60000)    / 1000);
+    el.textContent = `${d}d ${pad(h)}:${pad(m)}:${pad(s)}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+function daysUntil(date) { return Math.floor((date - Date.now()) / 86400000); }
+function formatDate(date) {
+  return date.toLocaleDateString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+/* ─── TX TABLE ───────────────────────────────────────────────────────── */
+function renderTx() {
+  const tbody = document.getElementById('tx-tbody');
+  tbody.innerHTML = '';
+  TRANSACTIONS.forEach(tx => {
+    const m = ACTION_META[tx.action] || ACTION_META.deposit;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="tx-date">${tx.date}</td>
+      <td><span class="tx-action-badge ${m.cls}">${m.icon} ${m.label}</span></td>
+      <td style="color:var(--text2);">${tx.pool}</td>
+      <td class="tx-amount ${tx.type === 'pos' ? 'pos' : tx.type === 'token' ? 'token' : ''}">${tx.amount}</td>
+      <td class="tx-hash"><a href="https://solscan.io/tx/${tx.hash}" target="_blank">${tx.hash} ↗</a></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function loadMoreTx() {
+  showToast('📋', 'All transactions loaded', 'No more transactions to display at this time.', 'info');
+}
+
+/* ─── UPCOMING PAYOUT TOASTS ─────────────────────────────────────────── */
+function checkUpcomingPayouts() {
+  setTimeout(() => {
+    POOLS.forEach(pool => {
+      const days = daysUntil(pool.payoutDate);
+      if (days <= 7 && days >= 0) {
+        showToast(
+          '🎉',
+          `Payout in ${days} day${days !== 1 ? 's' : ''}!`,
+          `The ${pool.name} pool will pay out $${pool.expectedPayout} USDC${days === 0 ? ' today' : ' on ' + formatDate(pool.payoutDate)}.`,
+          'success'
+        );
+      }
+    });
+  }, 1800);
+}
+
+/* ─── TOAST ──────────────────────────────────────────────────────────── */
+function showToast(icon, title, body, type = 'info') {
+  const container = document.getElementById('toasts');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  if (type === 'success') toast.style.borderColor = 'rgba(76,175,125,.35)';
+  toast.innerHTML = `
+    <div class="toast-inner">
+      <div class="toast-icon">${icon}</div>
+      <div>
+        <div class="toast-title">${title}</div>
+        <div class="toast-body">${body}</div>
+      </div>
+      <div class="toast-close">✕</div>
+    </div>`;
+  toast.addEventListener('click', () => removeToast(toast));
+  container.appendChild(toast);
+  setTimeout(() => removeToast(toast), 6000);
+}
+
+function removeToast(toast) {
+  toast.classList.add('removing');
+  setTimeout(() => toast.remove(), 300);
+}
+
+/* ─── IDENTICON (deterministic from wallet address) ──────────────────── */
+function generateIdenticon(addr) {
+  const canvas = document.getElementById('identicon-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  // simple hash → color grid
+  let hash = 0;
+  for (let i = 0; i < addr.length; i++) { hash = (hash * 31 + addr.charCodeAt(i)) >>> 0; }
+  const hue = hash % 360;
+  const colors = [
+    `hsl(${hue},60%,45%)`,
+    `hsl(${(hue+120)%360},50%,35%)`,
+    `hsl(${(hue+240)%360},55%,40%)`,
+    '#D4A843',
+  ];
+  ctx.fillStyle = '#1A1714';
+  ctx.fillRect(0,0,30,30);
+  for (let y = 0; y < 5; y++) {
+    for (let x = 0; x < 5; x++) {
+      const bit = (hash >> (y * 5 + x)) & 1;
+      if (bit) {
+        ctx.fillStyle = colors[(y + x) % colors.length];
+        ctx.fillRect(x * 6, y * 6, 5, 5);
+      }
+    }
+  }
+}
+
+/* ─── WALLET UTILS ───────────────────────────────────────────────────── */
+function shortAddr(addr) {
+  return addr.slice(0,4) + '...' + addr.slice(-4);
+}
+
+function copyAddr() {
+  navigator.clipboard?.writeText(STATE.wallet);
+  showToast('📋','Address Copied','Wallet address copied to clipboard.','info');
+}
+
+function disconnect() {
+  STATE.connected = false;
+  showNotConnected();
+  showToast('🔌','Wallet Disconnected','You have been disconnected from ZernoFi.','info');
+}
+
+function simulateConnect() {
+  STATE.connected = true;
+  initDashboard();
+  showToast('✅','Wallet Connected',`Connected to ${shortAddr(STATE.wallet)}. Welcome back!`,'success');
+}
+
+/* ─── REFRESH ────────────────────────────────────────────────────────── */
+function refreshData() {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  setTimeout(() => {
+    btn.classList.remove('spinning');
+    updateLastUpdated();
+    showToast('🔄','Data Refreshed','Portfolio updated from Solana blockchain.','info');
+  }, 1200);
+}
+
+function updateLastUpdated() {
+  const el = document.getElementById('last-updated');
+  if (el) el.textContent = 'Updated just now';
+}
+
+/* ─── SKELETON → CONTENT ─────────────────────────────────────────────── */
+function shortAddr(addr){return addr.slice(0,4)+'...'+addr.slice(-4);}
+
+/* ─── animate-in class ───────────────────────────────────────────────── */
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+  .anim-in{opacity:0;transform:translateY(12px);animation:animIn .5s ease forwards;}
+  @keyframes animIn{to{opacity:1;transform:none;}}
+`;
+document.head.appendChild(styleEl);
+</script>
+</body>
+</html>

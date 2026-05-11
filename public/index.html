@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZernoFi — Real Yield from Ukrainian Agribusiness on Solana</title>
+<meta name="description" content="The first RWA aggregator for Ukrainian agriculture on Solana. Earn real USDC yield from wheat and snail farms. From $100. Zero crypto-market volatility.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── DESIGN TOKENS ──────────────────────────────────────────────────── */
+:root {
+  --black:   #0A0906;
+  --ink:     #111009;
+  --surface: #141210;
+  --card:    #1A1714;
+  --card2:   #211E1A;
+  --border:  rgba(212,168,67,.1);
+  --border2: rgba(212,168,67,.2);
+  --border3: rgba(212,168,67,.35);
+  --gold:    #D4A843;
+  --gold2:   #E8BA55;
+  --gold-dim:#8A6C25;
+  --gold-bg: rgba(212,168,67,.06);
+  --gold-bg2:rgba(212,168,67,.12);
+  --green:   #2C5F3D;
+  --green2:  #3A7A50;
+  --green3:  #4CAF7D;
+  --green-bg:rgba(44,95,61,.15);
+  --red:     #8B3A1A;
+  --red-dim: rgba(139,58,26,.12);
+  --text:    #E8E2D8;
+  --muted:   #6B6560;
+  --muted2:  #4A4540;
+  --r:       10px;
+  --r2:      16px;
+  --r3:      22px;
+}
+
+/* ─── GRAIN TEXTURE ──────────────────────────────────────────────────── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 160px;
+  opacity: .022;
+  pointer-events: none;
+}
+
+/* ─── RESET ──────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+img { display: block; max-width: 100%; }
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────────── */
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 2.5rem; }
+section { padding: 5.5rem 0; }
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem; color: var(--gold);
+  text-transform: uppercase; letter-spacing: .14em;
+  margin-bottom: .6rem;
+}
+.section-title {
+  font-size: clamp(1.85rem, 3vw, 2.6rem);
+  font-weight: 700; color: var(--text);
+  line-height: 1.15; margin-bottom: .8rem;
+  letter-spacing: -.02em;
+}
+.section-sub {
+  font-size: .93rem; color: var(--muted);
+  max-width: 560px; line-height: 1.75;
+}
+
+/* ─── NAV ────────────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .85rem 2.5rem;
+  background: rgba(10,9,6,.92);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: .5px solid var(--border);
+}
+.logo-wrap { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-name {
+  font-size: 1.1rem; font-weight: 800;
+  color: var(--text); letter-spacing: -.01em;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  font-size: .82rem; font-weight: 500; color: var(--muted);
+  transition: color .2s; letter-spacing: .01em;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-right { display: flex; align-items: center; gap: .75rem; }
+.btn-open-app {
+  padding: .55rem 1rem;
+  background: var(--gold);
+  color: var(--black);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  font-size: .82rem; font-weight: 600;
+  text-decoration: none;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn-open-app:hover { background: var(--gold2); border-color: var(--gold2); transform: translateY(-1px); }
+.btn-wallet {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--card); border: .5px solid var(--border2);
+  color: var(--gold); padding: .5rem 1rem;
+  border-radius: 8px; font-size: .8rem; font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  transition: background .2s, border-color .2s; cursor: pointer;
+  letter-spacing: .02em;
+}
+.btn-wallet:hover { background: var(--card2); border-color: var(--border3); }
+.wallet-dot { width: 6px; height: 6px; background: var(--green3); border-radius: 50%; }
+
+/* ─── HACKATHON BANNER ───────────────────────────────────────────────── */
+.hbanner {
+  margin-top: 57px;
+  background: linear-gradient(90deg, var(--green) 0%, #1F4030 50%, var(--green) 100%);
+  padding: .4rem 1rem; text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem; color: rgba(255,255,255,.55);
+  letter-spacing: .1em; text-transform: uppercase;
+  border-bottom: .5px solid rgba(44,95,61,.4);
+}
+.hbanner span { color: var(--gold2); font-weight: 600; }
+
+/* ─── HERO ───────────────────────────────────────────────────────────── */
+.hero {
+  padding: 5rem 0 4rem;
+  position: relative; overflow: hidden;
+}
+/* radial glow */
+.hero::before {
+  content: '';
+  position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 600px;
+  background: radial-gradient(ellipse, rgba(44,95,61,.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 440px;
+  gap: 4.5rem; align-items: start;
+}
+/* left */
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold);
+  background: var(--gold-bg); border: .5px solid var(--border2);
+  padding: .3rem .85rem; border-radius: 100px;
+  margin-bottom: 1.5rem;
+}
+.pulse {
+  width: 6px; height: 6px; background: var(--green3); border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.25;} }
+.hero h1 {
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  font-weight: 800; line-height: 1.06;
+  letter-spacing: -.03em; margin-bottom: 1.3rem;
+  color: var(--text);
+}
+.hero h1 .accent { color: var(--gold); }
+.hero-sub {
+  font-size: .96rem; color: var(--muted);
+  max-width: 500px; line-height: 1.8;
+  margin-bottom: 2rem;
+}
+.hero-sub strong { color: var(--text); font-weight: 600; }
+.hero-ctas { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 2.25rem; }
+.btn-primary {
+  background: var(--gold); color: var(--black);
+  padding: .85rem 1.85rem; border-radius: 10px;
+  font-weight: 700; font-size: .88rem;
+  transition: background .2s, transform .15s;
+  display: inline-flex; align-items: center; gap: 6px;
+  letter-spacing: .01em;
+}
+.btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent; color: var(--text);
+  padding: .85rem 1.5rem; border-radius: 10px;
+  font-weight: 500; font-size: .88rem;
+  border: .5px solid var(--border2);
+  transition: border-color .2s, background .2s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-ghost:hover { border-color: var(--border3); background: var(--gold-bg); }
+/* trust pills */
+.trust-pills { display: flex; gap: .5rem; flex-wrap: wrap; }
+.tpill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; color: var(--muted); letter-spacing: .06em;
+}
+.tpill::before {
+  content: '✓'; color: var(--green3); font-size: .7rem;
+}
+
+/* HERO RIGHT — DATA PANEL */
+.data-panel {
+  background: var(--card);
+  border: .5px solid var(--border2);
+  border-radius: var(--r3);
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,.5), 0 0 0 .5px var(--border);
+  position: sticky; top: 80px;
+}
+.dp-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 1.4rem;
+  border-bottom: .5px solid var(--border);
+}
+.dp-title { font-family: 'JetBrains Mono', monospace; font-size: .62rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+.dp-live {
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'JetBrains Mono', monospace; font-size: .62rem;
+  color: var(--green3); letter-spacing: .06em;
+}
+.dp-live::before { content:''; width:5px; height:5px; background:var(--green3); border-radius:50%; animation:pulse 2s infinite; }
+
+/* POOL ROWS IN PANEL */
+.dp-pools { padding: .5rem 0; border-bottom: .5px solid var(--border); }
+.dp-pool-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .8rem 1.4rem; transition: background .15s;
+}
+.dp-pool-row:hover { background: rgba(212,168,67,.03); }
+.dpr-left { display: flex; align-items: center; gap: .7rem; }
+.dpr-icon { font-size: 1.3rem; }
+.dpr-name { font-size: .85rem; font-weight: 600; color: var(--text); }
+.dpr-fill { font-family: 'JetBrains Mono', monospace; font-size: .6rem; color: var(--muted); margin-top: 1px; }
+.dpr-right { text-align: right; }
+.dpr-apy { font-size: 1.35rem; font-weight: 700; color: var(--gold); letter-spacing: -.02em; }
+.dpr-label { font-family: 'JetBrains Mono', monospace; font-size: .57rem; color: var(--muted2); margin-top: 1px; }
+/* mini progress inside panel */
+.dp-prog-wrap { padding: 0 1.4rem .7rem; }
+.dp-prog { height: 2px; background: rgba(212,168,67,.08); border-radius: 1px; }
+.dp-prog-fill { height: 100%; background: var(--gold); border-radius: 1px; transition: width 1.5s ease; }
+.dp-prog-fill.g { background: var(--green3); }
+
+/* CALCULATOR */
+.dp-calc { padding: 1.1rem 1.4rem 1.4rem; }
+.dp-calc-label { font-family: 'JetBrains Mono', monospace; font-size: .6rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .65rem; }
+.dp-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .6rem; }
+.dp-input {
+  background: var(--card2); border: .5px solid var(--border2);
+  color: var(--text); padding: .55rem .7rem;
+  border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem; outline: none; width: 100%;
+  transition: border-color .2s;
+}
+.dp-input:focus { border-color: var(--gold); }
+.dp-select {
+  background: var(--card2); border: .5px solid var(--border2);
+  color: var(--text); padding: .55rem .7rem;
+  border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem; outline: none; cursor: pointer; width: 100%;
+}
+.dp-select option { background: var(--card2); }
+.dp-boost-row {
+  display: flex; align-items: center; gap: .6rem;
+  margin-bottom: .8rem;
+  font-size: .75rem; color: var(--muted);
+}
+.dp-boost-row strong { color: var(--gold); }
+/* toggle */
+.toggle { position: relative; width: 36px; height: 19px; cursor: pointer; flex-shrink: 0; }
+.toggle input { display: none; }
+.toggle-track {
+  position: absolute; inset: 0; background: var(--card2);
+  border-radius: 19px; border: .5px solid var(--border2);
+  transition: background .2s, border-color .2s;
+}
+.toggle input:checked + .toggle-track { background: rgba(212,168,67,.15); border-color: var(--gold-dim); }
+.toggle-thumb {
+  position: absolute; width: 13px; height: 13px;
+  background: var(--muted2); border-radius: 50%;
+  top: 3px; left: 3px; transition: transform .2s, background .2s;
+}
+.toggle input:checked ~ .toggle-thumb { transform: translateX(17px); background: var(--gold); }
+/* results */
+.dp-result {
+  background: var(--card2); border: .5px solid var(--border);
+  border-radius: 10px; padding: .85rem 1rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;
+}
+.dpr-item { text-align: center; }
+.dpr-item-label { font-family: 'JetBrains Mono', monospace; font-size: .56rem; color: var(--muted2); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .2rem; }
+.dpr-item-val { font-size: 1.4rem; font-weight: 700; color: var(--gold); letter-spacing: -.02em; }
+.dpr-item-val.boosted { color: var(--green3); }
+
+/* ─── STATS STRIP ────────────────────────────────────────────────────── */
+.stats-strip {
+  background: var(--surface);
+  border-top: .5px solid var(--border);
+  border-bottom: .5px solid var(--border);
+  padding: 2.5rem 0;
+}
+.stats-inner {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1rem; text-align: center;
+}
+.stat-v {
+  font-size: 2.2rem; font-weight: 800;
+  color: var(--text); letter-spacing: -.03em; line-height: 1;
+  margin-bottom: .3rem;
+}
+.stat-v .highlight { color: var(--gold); }
+.stat-l {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.stat-divider {
+  border-right: .5px solid var(--border);
+  padding-right: 1rem;
+}
+.stat-divider:last-child { border-right: none; }
+
+/* ─── PROBLEM / SOLUTION ─────────────────────────────────────────────── */
+.ps-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem; margin-top: 3.5rem;
+}
+.ps-col {
+  border-radius: var(--r3); padding: 2.25rem 2rem;
+}
+.ps-col.problem {
+  background: var(--card);
+  border: .5px solid rgba(139,58,26,.2);
+}
+.ps-col.solution {
+  background: var(--green-bg);
+  border: .5px solid rgba(44,95,61,.3);
+}
+.ps-badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; text-transform: uppercase; letter-spacing: .1em;
+  padding: .25rem .7rem; border-radius: 4px; margin-bottom: .9rem;
+}
+.problem .ps-badge { color: #E05D3A; background: var(--red-dim); }
+.solution .ps-badge { color: var(--green3); background: var(--green-bg); }
+.ps-col h3 { font-size: 1.45rem; font-weight: 700; margin-bottom: .7rem; letter-spacing: -.02em; }
+.ps-col p { font-size: .85rem; color: var(--muted); line-height: 1.75; margin-bottom: 1rem; }
+.ps-list { list-style: none; display: flex; flex-direction: column; gap: .45rem; }
+.ps-list li {
+  font-size: .83rem; color: var(--muted);
+  padding-left: 1.3rem; position: relative;
+}
+.ps-list li::before { position: absolute; left: 0; }
+.problem .ps-list li::before { content: '×'; color: #E05D3A; }
+.solution .ps-list li::before { content: '✓'; color: var(--green3); }
+
+/* ─── HOW IT WORKS ───────────────────────────────────────────────────── */
+.hiw-bg { background: var(--surface); border-top: .5px solid var(--border); border-bottom: .5px solid var(--border); }
+.steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 3.5rem; }
+.step-card {
+  background: var(--card); border: .5px solid var(--border);
+  border-radius: var(--r3); padding: 2rem;
+  position: relative; overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+.step-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.step-num {
+  font-size: 5rem; font-weight: 800; color: rgba(212,168,67,.07);
+  line-height: 1; margin-bottom: .75rem;
+  letter-spacing: -.04em;
+}
+.step-icon { font-size: 1.6rem; margin-bottom: .85rem; }
+.step-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .45rem; }
+.step-card p { font-size: .83rem; color: var(--muted); line-height: 1.65; }
+.step-connector {
+  position: absolute; top: 50%; right: -1px;
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--border2), transparent);
+  transform: translateY(-50%);
+}
+
+/* ─── POOLS ──────────────────────────────────────────────────────────── */
+.pools-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-top: 3.5rem; }
+.pool-card {
+  background: var(--card); border: .5px solid var(--border);
+  border-radius: var(--r3); overflow: hidden;
+  transition: border-color .2s, transform .2s;
+  display: flex; flex-direction: column;
+}
+.pool-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+.pool-card.filled { opacity: .55; pointer-events: none; }
+.pc-top {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: .5px solid var(--border);
+}
+.pc-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .5rem; }
+.pc-icon { font-size: 2rem; }
+.pc-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; text-transform: uppercase; letter-spacing: .08em;
+  padding: .22rem .65rem; border-radius: 100px;
+}
+.pc-status.active { color: var(--green3); background: rgba(76,175,125,.1); border: .5px solid rgba(76,175,125,.2); }
+.pc-status.filled { color: var(--muted); background: var(--card2); border: .5px solid var(--border); }
+.pc-top h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: .15rem; }
+.pc-sub { font-family: 'JetBrains Mono', monospace; font-size: .62rem; color: var(--muted); }
+.pc-body { padding: 1.25rem 1.5rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
+.pc-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; margin-bottom: 1.1rem; }
+.pcs-l { font-family: 'JetBrains Mono', monospace; font-size: .58rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: .2rem; }
+.pcs-v { font-size: 1.2rem; font-weight: 700; color: var(--gold); letter-spacing: -.02em; }
+.pcs-v.g { color: var(--green3); }
+/* progress bar on pools */
+.pc-prog-wrap { margin-bottom: 1.1rem; }
+.pc-prog-head { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: .59rem; color: var(--muted); margin-bottom: .35rem; }
+.pc-prog { height: 4px; background: rgba(212,168,67,.08); border-radius: 2px; }
+.pc-prog-fill { height: 100%; border-radius: 2px; transition: width 1.5s ease; }
+.pc-prog-fill.gold { background: var(--gold); }
+.pc-prog-fill.green { background: var(--green3); }
+.pc-prog-fill.gray { background: var(--muted2); }
+.pc-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: 1.1rem; }
+.pctag {
+  font-family: 'JetBrains Mono', monospace; font-size: .59rem;
+  padding: .2rem .55rem; border-radius: 4px;
+  background: var(--card2); border: .5px solid var(--border);
+  color: var(--muted); letter-spacing: .04em;
+}
+.pctag.ok { color: var(--green3); background: rgba(76,175,125,.06); border-color: rgba(76,175,125,.15); }
+.pc-cta {
+  display: block; width: 100%; text-align: center;
+  background: var(--gold-bg); color: var(--gold);
+  border: .5px solid var(--border2); padding: .75rem;
+  border-radius: 9px; font-weight: 700; font-size: .85rem;
+  transition: background .2s, border-color .2s;
+  margin-top: auto;
+}
+.pc-cta:hover { background: var(--gold-bg2); border-color: var(--border3); }
+.pc-cta.green { color: var(--green3); border-color: rgba(76,175,125,.2); }
+.pc-cta.green:hover { background: rgba(76,175,125,.1); border-color: rgba(76,175,125,.3); }
+.pc-cta.disabled { color: var(--muted); background: transparent; cursor: default; }
+
+/* ─── CALCULATOR SECTION ─────────────────────────────────────────────── */
+.calc-box {
+  background: var(--card); border: .5px solid var(--border2);
+  border-radius: var(--r3); padding: 2.5rem;
+  margin-top: 2.5rem;
+}
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+.cf label {
+  display: block; font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: .45rem;
+}
+.cf input, .cf select {
+  width: 100%; background: var(--card2);
+  border: .5px solid var(--border2);
+  color: var(--text); padding: .7rem .9rem;
+  border-radius: 8px; font-size: .93rem;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none; transition: border-color .2s;
+}
+.cf input:focus, .cf select:focus { border-color: var(--gold); }
+.cf select option { background: var(--card2); }
+.calc-boost-row {
+  display: flex; align-items: center; gap: .7rem;
+  font-size: .82rem; color: var(--muted); margin-bottom: 1.5rem;
+}
+.calc-boost-row strong { color: var(--gold); }
+.calc-results {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem;
+  padding-top: 1.5rem; border-top: .5px solid var(--border);
+}
+.cr-item { text-align: center; }
+.cr-l { font-family: 'JetBrains Mono', monospace; font-size: .6rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .35rem; }
+.cr-v { font-size: 2rem; font-weight: 700; color: var(--gold); letter-spacing: -.03em; }
+.cr-v.g { color: var(--green3); }
+.cr-sub { font-size: .68rem; color: var(--muted2); font-family: 'JetBrains Mono', monospace; margin-top: 3px; }
+
+/* ─── COMPARISON ─────────────────────────────────────────────────────── */
+.cmp-bg { background: var(--surface); border-top: .5px solid var(--border); border-bottom: .5px solid var(--border); }
+.table-wrap { margin-top: 3.5rem; border: .5px solid var(--border); border-radius: var(--r2); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: .85rem 1.1rem; font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--muted); background: var(--card);
+  border-bottom: .5px solid var(--border); text-align: left;
+}
+thead th.zernofi-col { color: var(--gold); background: rgba(212,168,67,.04); }
+tbody td {
+  padding: .85rem 1.1rem; font-size: .83rem; color: var(--muted);
+  border-bottom: .5px solid var(--border); vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { color: var(--text); font-weight: 500; }
+td.zernofi-col { color: var(--text); background: rgba(212,168,67,.03); border-left: 1.5px solid var(--gold); border-right: 1.5px solid var(--gold); }
+.ok { color: var(--green3); font-weight: 600; }
+.no { color: #E05D3A; }
+
+/* ─── WHY ZERNOFI ────────────────────────────────────────────────────── */
+.feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; margin-top: 3.5rem; }
+.feat-card {
+  background: var(--card); border: .5px solid var(--border);
+  border-radius: var(--r2); padding: 1.75rem;
+  transition: border-color .2s, transform .2s;
+}
+.feat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.feat-icon { font-size: 1.5rem; margin-bottom: .85rem; }
+.feat-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+.feat-card p { font-size: .82rem; color: var(--muted); line-height: 1.65; }
+
+/* ─── MARKET SIZE ────────────────────────────────────────────────────── */
+.tam-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3.5rem; }
+.tam-card {
+  background: var(--card); border: .5px solid var(--border);
+  border-radius: var(--r3); padding: 2.25rem 2rem;
+  text-align: center; position: relative; overflow: hidden;
+}
+.tam-card::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--col); opacity: .06; height: var(--h);
+}
+.tam-card.t1 { --col: var(--gold); --h: 100%; }
+.tam-card.t2 { --col: var(--green3); --h: 65%; }
+.tam-card.t3 { --col: #60BDFF; --h: 18%; }
+.tam-badge {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; text-transform: uppercase; letter-spacing: .12em;
+  padding: .25rem .7rem; border-radius: 4px; margin-bottom: 1.25rem;
+}
+.t1 .tam-badge { color: var(--gold); background: var(--gold-bg); }
+.t2 .tam-badge { color: var(--green3); background: var(--green-bg); }
+.t3 .tam-badge { color: #60BDFF; background: rgba(96,189,255,.08); }
+.tam-val { font-size: 2.8rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: .3rem; letter-spacing: -.04em; }
+.tam-name { font-size: .75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .4rem; }
+.tam-desc { font-size: .78rem; color: var(--muted); line-height: 1.55; }
+
+/* ─── TOKENOMICS ─────────────────────────────────────────────────────── */
+.tok-bg { background: var(--card); border-top: .5px solid var(--border); border-bottom: .5px solid var(--border); }
+.tok-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.tok-meta { display: flex; flex-direction: column; gap: .6rem; margin-top: 2rem; }
+.tok-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .65rem .9rem; background: var(--card2);
+  border: .5px solid var(--border); border-radius: 8px;
+}
+.tok-row-l { font-family: 'JetBrains Mono', monospace; font-size: .63rem; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+.tok-row-v { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--gold); font-weight: 600; }
+.tok-util { margin-top: 2rem; display: flex; flex-direction: column; gap: .6rem; }
+.tu-card {
+  display: flex; align-items: center; gap: .85rem;
+  background: var(--card2); border: .5px solid var(--border);
+  border-radius: 10px; padding: .85rem 1rem;
+  transition: border-color .2s;
+}
+.tu-card:hover { border-color: var(--border2); }
+.tu-icon { font-size: 1.1rem; flex-shrink: 0; }
+.tu-title { font-size: .85rem; font-weight: 600; color: var(--text); margin-bottom: 1px; }
+.tu-desc { font-size: .75rem; color: var(--muted); }
+/* donut */
+.donut-side { text-align: center; }
+.donut-legend { margin-top: 1.75rem; display: flex; flex-direction: column; gap: .55rem; text-align: left; }
+.dl-row { display: flex; align-items: center; justify-content: space-between; font-size: .8rem; color: var(--muted); }
+.dl-left { display: flex; align-items: center; gap: .55rem; }
+.dl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dl-pct { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--gold); font-weight: 600; }
+
+/* ─── ROADMAP ────────────────────────────────────────────────────────── */
+.rm-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-top: 3.5rem; position: relative; }
+.rm-grid::before {
+  content: ''; position: absolute; top: 23px; left: 48px; right: 48px;
+  height: .5px; background: var(--border);
+}
+.rm-item { position: relative; }
+.rm-dot {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: .85rem; font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; font-weight: 600; letter-spacing: .03em;
+  position: relative; z-index: 1; border: .5px solid var(--border);
+  background: var(--card);
+}
+.rm-item.done .rm-dot { background: var(--gold); color: var(--black); border-color: var(--gold); }
+.rm-item.now .rm-dot { background: var(--card2); color: var(--gold); border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,168,67,.15); }
+.rm-item.future .rm-dot { color: var(--muted2); }
+.rm-q { font-family: 'JetBrains Mono', monospace; font-size: .65rem; color: var(--gold); margin-bottom: .4rem; }
+.rm-item h4 { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+.rm-item p { font-size: .78rem; color: var(--muted); line-height: 1.5; }
+
+/* ─── TEAM ───────────────────────────────────────────────────────────── */
+.team-bg { background: var(--surface); border-top: .5px solid var(--border); border-bottom: .5px solid var(--border); }
+.team-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; margin-top: 3.5rem; }
+.team-card {
+  background: var(--card); border: .5px solid var(--border);
+  border-radius: var(--r2); padding: 1.75rem 1.4rem;
+  text-align: center; transition: border-color .2s;
+}
+.team-card:hover { border-color: var(--border2); }
+.team-avatar {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: var(--green); border: 1.5px solid var(--border2);
+  margin: 0 auto .85rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; font-weight: 800; color: var(--gold);
+}
+.team-name { font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: .15rem; }
+.team-role { font-size: .75rem; color: var(--gold); margin-bottom: .6rem; font-weight: 500; }
+.team-bio { font-size: .75rem; color: var(--muted); line-height: 1.5; margin-bottom: .75rem; }
+.team-li {
+  font-family: 'JetBrains Mono', monospace; font-size: .6rem;
+  color: var(--muted2); transition: color .2s;
+}
+.team-li:hover { color: var(--gold); }
+
+/* ─── WHITELIST CTA ──────────────────────────────────────────────────── */
+.wl-box {
+  background: var(--card); border: .5px solid var(--border2);
+  border-radius: var(--r3); padding: 3rem; margin-top: 4rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+}
+.wl-left h2 { font-size: 2rem; font-weight: 800; letter-spacing: -.03em; margin-bottom: .75rem; }
+.wl-left h2 em { color: var(--gold); font-style: normal; }
+.wl-left p { font-size: .88rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.25rem; }
+.wl-perks { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+.wl-perks li { font-size: .82rem; color: var(--muted); padding-left: 1.2rem; position: relative; }
+.wl-perks li::before { content: '✓'; position: absolute; left: 0; color: var(--green3); }
+.wl-form { display: flex; flex-direction: column; gap: .75rem; }
+.wl-form input {
+  width: 100%; background: var(--card2);
+  border: .5px solid var(--border2); color: var(--text);
+  padding: .8rem 1rem; border-radius: 9px;
+  font-size: .88rem; font-family: 'Sora', sans-serif;
+  outline: none; transition: border-color .2s;
+}
+.wl-form input:focus { border-color: var(--gold); }
+.wl-form input::placeholder { color: var(--muted2); }
+.btn-wl {
+  background: var(--gold); color: var(--black);
+  padding: .85rem; border-radius: 9px;
+  font-weight: 700; font-size: .9rem;
+  border: none; cursor: pointer;
+  transition: background .2s; letter-spacing: .01em;
+}
+.btn-wl:hover { background: var(--gold2); }
+.wl-note { font-family: 'JetBrains Mono', monospace; font-size: .62rem; color: var(--muted2); text-align: center; }
+
+/* ─── FINAL CTA ──────────────────────────────────────────────────────── */
+.final-cta {
+  background: var(--green);
+  padding: 5.5rem 0;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.final-cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(212,168,67,.08), transparent);
+  pointer-events: none;
+}
+.final-cta h2 { font-size: clamp(2rem,4vw,3.2rem); font-weight: 800; letter-spacing: -.03em; margin-bottom: .85rem; }
+.final-cta p { font-size: .95rem; color: rgba(255,255,255,.55); max-width: 460px; margin: 0 auto 2rem; line-height: 1.75; }
+.final-ctas { display: flex; gap: .85rem; justify-content: center; flex-wrap: wrap; }
+
+/* ─── FOOTER ─────────────────────────────────────────────────────────── */
+footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid var(--border); }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 2.5rem; }
+.footer-brand p { font-size: .8rem; color: var(--muted); max-width: 250px; line-height: 1.65; margin-top: .6rem; }
+.footer-col h5 { font-family: 'JetBrains Mono', monospace; font-size: .6rem; text-transform: uppercase; letter-spacing: .12em; color: var(--muted2); margin-bottom: .85rem; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .45rem; }
+.footer-col ul a { font-size: .82rem; color: var(--muted); transition: color .2s; }
+.footer-col ul a:hover { color: var(--text); }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 1.75rem; border-top: .5px solid var(--border);
+  flex-wrap: wrap; gap: .5rem;
+}
+.footer-bottom p { font-family: 'JetBrains Mono', monospace; font-size: .62rem; color: var(--muted2); }
+.socials { display: flex; gap: .5rem; }
+.soc-btn {
+  width: 32px; height: 32px; border: .5px solid var(--border);
+  border-radius: 7px; display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; color: var(--muted); transition: border-color .2s, color .2s;
+}
+.soc-btn:hover { border-color: var(--gold); color: var(--gold); }
+/* risk disclosure */
+.risk-note {
+  background: var(--card2); border: .5px solid var(--border);
+  border-radius: 10px; padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem; font-size: .75rem; color: var(--muted);
+  line-height: 1.65; font-family: 'JetBrains Mono', monospace;
+}
+.risk-note strong { color: var(--muted); font-weight: 600; }
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────────── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+.anim { animation: fadeUp .6s ease both; animation-play-state: paused; }
+.d1 { animation-delay: .05s; } .d2 { animation-delay: .15s; }
+.d3 { animation-delay: .27s; } .d4 { animation-delay: .4s; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
+@media(max-width:960px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .data-panel { position: static; }
+  .ps-grid, .tok-inner, .wl-box { grid-template-columns: 1fr; }
+  .pools-grid, .feat-grid { grid-template-columns: 1fr 1fr; }
+  .tam-grid, .steps-grid { grid-template-columns: 1fr; }
+  .rm-grid { grid-template-columns: 1fr 1fr; }
+  .rm-grid::before { display: none; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .stats-inner { grid-template-columns: 1fr 1fr; }
+  .team-grid { grid-template-columns: 1fr 1fr; }
+  nav .nav-links { display: none; }
+  .wrap { padding: 0 1.4rem; }
+  .calc-grid, .calc-results { grid-template-columns: 1fr; }
+}
+@media(max-width:580px) {
+  .pools-grid, .feat-grid, .team-grid { grid-template-columns: 1fr; }
+  .rm-grid { grid-template-columns: 1fr; }
+  .dp-inputs { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ NAV ═══════════════════════════════════════ -->
+<nav>
+  <div class="logo-wrap">
+    <div class="logo-icon">🌾</div>
+    <span class="logo-name">ZERNOFI</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#how">How it Works</a></li>
+    <li><a href="#pools">Pools</a></li>
+    <li><a href="#token">$UAAGRO</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#waitlist">Waitlist</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="/app.html" class="btn-open-app">Open App →</a>
+    <button class="btn-wallet">
+      <div class="wallet-dot"></div>
+      Connect Wallet
+    </button>
+  </div>
+</nav>
+
+<!-- HACKATHON BANNER -->
+<div class="hbanner">🏆 <span>Built for the Solana Global Hackathon</span> &nbsp;·&nbsp; RWA Track &nbsp;·&nbsp; Real Assets. Real Yield.</div>
+
+<!-- ══════════════════════════ HERO ══════════════════════════════════════ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+
+      <!-- LEFT -->
+      <div>
+        <div class="hero-eyebrow anim d1"><div class="pulse"></div>Solana Native · RWA Aggregator</div>
+        <h1 class="anim d2">
+          Real Crops.<br>
+          <span class="accent">Real Yield.</span><br>
+          Zero Volatility.
+        </h1>
+        <p class="hero-sub anim d3">
+          ZernoFi is the first agricultural RWA aggregator on Solana.
+          Earn <strong>USDC yield from verified Ukrainian wheat fields and snail farms.</strong>
+          From $100. Backed by physical insurance and on-chain oracles.
+        </p>
+        <div class="hero-ctas anim d4">
+          <a href="#pools" class="btn-primary">Start Investing →</a>
+          <a href="#" class="btn-ghost">📄 Read Whitepaper</a>
+        </div>
+        <div class="trust-pills anim d4">
+          <span class="tpill">Anchor Audited</span>
+          <span class="tpill">Pyth Oracles</span>
+          <span class="tpill">IPFS Legal Docs</span>
+          <span class="tpill">Crop Insurance</span>
+        </div>
+      </div>
+
+      <!-- RIGHT — LIVE PANEL -->
+      <div class="data-panel anim d3">
+        <div class="dp-header">
+          <span class="dp-title">Active Pools</span>
+          <span class="dp-live">Live on Solana</span>
+        </div>
+
+        <!-- WHEAT ROW -->
+        <div class="dp-pools">
+          <div class="dp-pool-row">
+            <div class="dpr-left">
+              <div class="dpr-icon">🌾</div>
+              <div>
+                <div class="dpr-name">Wheat Pool</div>
+                <div class="dpr-fill">$1.2M / $10M · 12% filled</div>
+              </div>
+            </div>
+            <div class="dpr-right">
+              <div class="dpr-apy">18.5%</div>
+              <div class="dpr-label">Target APY</div>
+            </div>
+          </div>
+          <div class="dp-prog-wrap">
+            <div class="dp-prog"><div class="dp-prog-fill" style="width:12%"></div></div>
+          </div>
+
+          <!-- SNAIL ROW -->
+          <div class="dp-pool-row">
+            <div class="dpr-left">
+              <div class="dpr-icon">🐌</div>
+              <div>
+                <div class="dpr-name">Escargot Pool</div>
+                <div class="dpr-fill">$850k / $5M · 17% filled</div>
+              </div>
+            </div>
+            <div class="dpr-right">
+              <div class="dpr-apy" style="color:var(--green3)">24%</div>
+              <div class="dpr-label">Target APY</div>
+            </div>
+          </div>
+          <div class="dp-prog-wrap">
+            <div class="dp-prog"><div class="dp-prog-fill g" style="width:17%"></div></div>
+          </div>
+        </div>
+
+        <!-- CALCULATOR -->
+        <div class="dp-calc">
+          <div class="dp-calc-label">Quick Calculator</div>
+          <div class="dp-inputs">
+            <input class="dp-input" id="h-amt" type="number" value="1000" min="100" step="100" placeholder="USDC">
+            <select class="dp-select" id="h-pool">
+              <option value="18.5">🌾 Wheat 18.5%</option>
+              <option value="24">🐌 Escargot 24%</option>
+            </select>
+          </div>
+          <div class="dp-boost-row">
+            <label class="toggle">
+              <input type="checkbox" id="h-boost">
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+            <span>Yield Boost via <strong>$UAAGRO</strong> staking (+3%)</span>
+          </div>
+          <div class="dp-result">
+            <div class="dpr-item">
+              <div class="dpr-item-label">Annual Yield</div>
+              <div class="dpr-item-val" id="h-base">$185</div>
+            </div>
+            <div class="dpr-item">
+              <div class="dpr-item-label">With Boost</div>
+              <div class="dpr-item-val boosted" id="h-boost-val">$215</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ STATS STRIP ═══════════════════════════════ -->
+<div class="stats-strip">
+  <div class="wrap">
+    <div class="stats-inner">
+      <div class="stat-divider">
+        <div class="stat-v">$<span class="highlight">4.2</span>M</div>
+        <div class="stat-l">Total Value Locked</div>
+      </div>
+      <div class="stat-divider">
+        <div class="stat-v"><span class="highlight">2</span></div>
+        <div class="stat-l">Active Pools</div>
+      </div>
+      <div class="stat-divider">
+        <div class="stat-v"><span class="highlight">18–24</span>%</div>
+        <div class="stat-l">Target APY in USDC</div>
+      </div>
+      <div>
+        <div class="stat-v">$<span class="highlight">100</span></div>
+        <div class="stat-l">Minimum Investment</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ PROBLEM / SOLUTION ════════════════════════ -->
+<section>
+  <div class="wrap">
+    <div class="section-label">The Problem We Solve</div>
+    <h2 class="section-title">A $160B Gap Between Farmers and Capital</h2>
+    <div class="ps-grid">
+      <div class="ps-col problem">
+        <span class="ps-badge">The Gap</span>
+        <h3>Agriculture is the world's most underfunded sector</h3>
+        <p>Farmers need fast capital for seasonal operations. Banks are slow, opaque, and inaccessible. Crypto investors want stable yield — but the market is a casino.</p>
+        <ul class="ps-list">
+          <li>Bank financing takes weeks — harvest can't wait</li>
+          <li>$160B annual funding gap in global agriculture</li>
+          <li>No real USDC yield from physical assets exists</li>
+          <li>TradFi agriculture has $50,000+ minimums</li>
+          <li>Zero transparency in traditional agro-finance</li>
+        </ul>
+      </div>
+      <div class="ps-col solution">
+        <span class="ps-badge">ZernoFi's Answer</span>
+        <h3>Harvest on-chain. Yield in USDC. Settlement in seconds.</h3>
+        <p>Verified Ukrainian farms tokenize their harvest. You deposit USDC. You earn from real crop sales — not token printing. Everything is transparent, insured, and on-chain.</p>
+        <ul class="ps-list">
+          <li>Settlement in milliseconds on Solana</li>
+          <li>Every farm verified by Pyth oracles + IPFS docs</li>
+          <li>Dividends from actual harvest sales — not emissions</li>
+          <li>From $100 — accessible to any investor worldwide</li>
+          <li>Exit anytime via $UAAGRO on Jupiter DEX</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ HOW IT WORKS ══════════════════════════════ -->
+<section class="hiw-bg" id="how">
+  <div class="wrap">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Invest in 3 Steps. No PhD Required.</h2>
+    <p class="section-sub">No complex smart contract interactions. No prior crypto experience needed. Just connect, choose, and earn.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">🔗</div>
+        <h3>Connect Your Wallet</h3>
+        <p>Use Phantom, Backpack, or Solflare. Fund with USDC from any exchange. One-click connection to the ZernoFi protocol.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🌾</div>
+        <h3>Choose Your Pool</h3>
+        <p>Select Wheat (18.5% APY, 9-month term) or Escargot Farms (24% APY, 12-month term) based on your risk/reward preference.</p>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">💵</div>
+        <h3>Earn USDC Dividends</h3>
+        <p>Receive stablecoin dividends from real harvest sales. Automatically earn $UAAGRO tokens for Yield Boost on top.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ POOLS ═════════════════════════════════════ -->
+<section id="pools">
+  <div class="wrap">
+    <div class="section-label">Investment Pools</div>
+    <h2 class="section-title">Choose Your Agricultural Asset</h2>
+    <p class="section-sub">Two active pools with verified Ukrainian farms. All assets backed by physical insurance and on-chain verification.</p>
+
+    <div class="pools-grid">
+
+      <!-- WHEAT -->
+      <div class="pool-card" style="grid-column: span 1;">
+        <div class="pc-top">
+          <div class="pc-top-row">
+            <div class="pc-icon">🌾</div>
+            <span class="pc-status active">● Active</span>
+          </div>
+          <h3>Premium Winter Wheat</h3>
+          <div class="pc-sub">Kyiv Region, Ukraine · Harvest Q3 2026</div>
+        </div>
+        <div class="pc-body">
+          <div class="pc-stats">
+            <div><div class="pcs-l">Target APY</div><div class="pcs-v">18.5%</div></div>
+            <div><div class="pcs-l">Pool TVL</div><div class="pcs-v">$1.2M</div></div>
+            <div><div class="pcs-l">Term</div><div class="pcs-v">9 mo</div></div>
+          </div>
+          <div class="pc-prog-wrap">
+            <div class="pc-prog-head"><span>Pool Capacity</span><span style="color:var(--gold)">$1.2M / $10M</span></div>
+            <div class="pc-prog"><div class="pc-prog-fill gold" style="width:12%"></div></div>
+          </div>
+          <div class="pc-tags">
+            <span class="pctag ok">✓ Crop Insurance</span>
+            <span class="pctag ok">✓ IPFS Verified</span>
+            <span class="pctag ok">✓ Pyth Oracles</span>
+            <span class="pctag ok">✓ Anchor Audited</span>
+          </div>
+          <a href="#" class="pc-cta">Supply USDC →</a>
+        </div>
+      </div>
+
+      <!-- SNAIL -->
+      <div class="pool-card" style="border-color: rgba(76,175,125,.15);">
+        <div class="pc-top" style="border-color: rgba(76,175,125,.1);">
+          <div class="pc-top-row">
+            <div class="pc-icon">🐌</div>
+            <span class="pc-status active">● Active</span>
+          </div>
+          <h3>Escargot Farm Expansion</h3>
+          <div class="pc-sub">Lviv Region, Ukraine · Export Grade · EU Market</div>
+        </div>
+        <div class="pc-body">
+          <div class="pc-stats">
+            <div><div class="pcs-l">Target APY</div><div class="pcs-v g">24%</div></div>
+            <div><div class="pcs-l">Pool TVL</div><div class="pcs-v">$850k</div></div>
+            <div><div class="pcs-l">Term</div><div class="pcs-v">12 mo</div></div>
+          </div>
+          <div class="pc-prog-wrap">
+            <div class="pc-prog-head"><span>Pool Capacity</span><span style="color:var(--green3)">$850k / $5M</span></div>
+            <div class="pc-prog"><div class="pc-prog-fill green" style="width:17%"></div></div>
+          </div>
+          <div class="pc-tags">
+            <span class="pctag ok">✓ Higher Margin</span>
+            <span class="pctag ok">✓ EU Export Confirmed</span>
+            <span class="pctag ok">✓ Vet Insurance</span>
+            <span class="pctag ok">✓ Anchor Audited</span>
+          </div>
+          <a href="#" class="pc-cta green">Supply USDC →</a>
+        </div>
+      </div>
+
+      <!-- FILLED POOL -->
+      <div class="pool-card filled">
+        <div class="pc-top">
+          <div class="pc-top-row">
+            <div class="pc-icon">🌽</div>
+            <span class="pc-status filled">Filled</span>
+          </div>
+          <h3>Sweet Corn Consortium</h3>
+          <div class="pc-sub">Odesa Region, Ukraine · Harvest Q4 2025</div>
+        </div>
+        <div class="pc-body">
+          <div class="pc-stats">
+            <div><div class="pcs-l">Target APY</div><div class="pcs-v">16.2%</div></div>
+            <div><div class="pcs-l">Pool TVL</div><div class="pcs-v">$2.5M</div></div>
+            <div><div class="pcs-l">Term</div><div class="pcs-v">6 mo</div></div>
+          </div>
+          <div class="pc-prog-wrap">
+            <div class="pc-prog-head"><span>Pool Capacity</span><span>$2.5M / $2.5M</span></div>
+            <div class="pc-prog"><div class="pc-prog-fill gray" style="width:100%"></div></div>
+          </div>
+          <div class="pc-tags">
+            <span class="pctag">Pool Closed</span>
+          </div>
+          <a href="#" class="pc-cta disabled">Pool Closed</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="calc-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <div class="section-label">Yield Calculator</div>
+          <h3 style="font-size:1.4rem; font-weight:700; letter-spacing:-.02em;">Estimate Your Returns</h3>
+        </div>
+        <p style="font-size:.8rem; color:var(--muted); max-width:320px; text-align:right; line-height:1.5;">Based on target APYs. Actual yield depends on harvest outcomes and market prices.</p>
+      </div>
+      <div class="calc-grid">
+        <div class="cf"><label>Investment Amount (USDC)</label><input type="number" id="c-amt" value="10000" min="100" step="500"></div>
+        <div class="cf"><label>Pool</label><select id="c-pool"><option value="18.5">🌾 Wheat (18.5% APY)</option><option value="24">🐌 Escargot (24.0% APY)</option></select></div>
+        <div class="cf"><label>Duration (months)</label><input type="number" id="c-dur" value="12" min="1" max="24"></div>
+      </div>
+      <div class="calc-boost-row">
+        <label class="toggle">
+          <input type="checkbox" id="c-boost">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+        <span>Include Yield Boost via <strong>$UAAGRO</strong> staking (+3.0% APY)</span>
+      </div>
+      <div class="calc-results">
+        <div class="cr-item"><div class="cr-l">Estimated Yield</div><div class="cr-v g" id="c-yield">+$1,850</div><div class="cr-sub">base APY only</div></div>
+        <div class="cr-item"><div class="cr-l">With $UAAGRO Boost</div><div class="cr-v" id="c-boost-val">+$2,150</div><div class="cr-sub">+3% from staking</div></div>
+        <div class="cr-item"><div class="cr-l">Total Balance</div><div class="cr-v" id="c-total">$11,850</div><div class="cr-sub">principal + yield</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ WHY ZERNOFI ═══════════════════════════════ -->
+<section>
+  <div class="wrap">
+    <div class="section-label">Competitive Advantage</div>
+    <h2 class="section-title">Why ZernoFi Wins</h2>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon">⚡</div><h4>Speed to Capital</h4><p>Solana settles in ~400ms. Traditional agriculture financing takes 30–90 days. We fix farmers' cash flow crises that banks can't.</p></div>
+      <div class="feat-card"><div class="feat-icon">🔍</div><h4>On-Chain Transparency</h4><p>Every farm's legal contracts are stored on IPFS. Harvest volumes and sale prices verified by Pyth/Switchboard oracles. Zero black boxes.</p></div>
+      <div class="feat-card"><div class="feat-icon">💵</div><h4>Real Yield, Not Emissions</h4><p>Your USDC return comes from actual crop sales — not from printing our own token. This is yield with no circular dependency.</p></div>
+      <div class="feat-card"><div class="feat-icon">🛡️</div><h4>Triple-Layer Protection</h4><p>Physical crop insurance + on-chain reserve fund + Anchor smart contract audit. Three independent safeguards on every deposit.</p></div>
+      <div class="feat-card"><div class="feat-icon">💧</div><h4>Genuine Liquidity</h4><p>$UAAGRO on Jupiter DEX creates a secondary market for agro positions. Exit your investment anytime — no lockup prison.</p></div>
+      <div class="feat-card"><div class="feat-icon">📈</div><h4>Infinite Scalability</h4><p>We're an aggregator — not a single farm. Any verified farmer can become a pool. Think Amazon for agricultural investment.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ COMPARISON ════════════════════════════════ -->
+<section class="cmp-bg">
+  <div class="wrap">
+    <div class="section-label">Competitive Analysis</div>
+    <h2 class="section-title">ZernoFi vs. The Alternatives</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Traditional DeFi</th>
+            <th>TradFi Agriculture</th>
+            <th class="zernofi-col">✦ ZernoFi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Yield Source</td><td class="no">Token emission (circular)</td><td>Real crop sales</td><td class="zernofi-col ok">Real crop sales</td></tr>
+          <tr><td>Settlement Time</td><td>Minutes / Hours</td><td class="no">30–90 Days</td><td class="zernofi-col ok">~400ms (Solana)</td></tr>
+          <tr><td>Entry Barrier</td><td>No minimum</td><td class="no">$50,000+</td><td class="zernofi-col ok">$100 minimum</td></tr>
+          <tr><td>Volatility Risk</td><td class="no">Extreme (token price)</td><td>Low to Medium</td><td class="zernofi-col ok">Low (USDC pegged)</td></tr>
+          <tr><td>Transparency</td><td>Smart contract only</td><td class="no">Opaque / Bank-controlled</td><td class="zernofi-col ok">On-chain + IPFS docs</td></tr>
+          <tr><td>Liquidity</td><td>DEX pools</td><td class="no">Illiquid / Locked</td><td class="zernofi-col ok">$UAAGRO on Jupiter</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ MARKET SIZE ═══════════════════════════════ -->
+<section>
+  <div class="wrap">
+    <div class="section-label">Market Opportunity</div>
+    <h2 class="section-title">TAM · SAM · SOM</h2>
+    <p class="section-sub">A realistic breakdown from the global opportunity to our first achievable target.</p>
+    <div class="tam-grid">
+      <div class="tam-card t1">
+        <div class="tam-badge">TAM</div>
+        <div class="tam-val">$160B</div>
+        <div class="tam-name">Total Addressable Market</div>
+        <div class="tam-desc">Annual global agricultural finance gap. Source: World Bank, FAO 2024.</div>
+      </div>
+      <div class="tam-card t2">
+        <div class="tam-badge">SAM</div>
+        <div class="tam-val">$2.5B</div>
+        <div class="tam-name">Serviceable Available Market</div>
+        <div class="tam-desc">Tokenized agri-sector in Ukraine + RWA DeFi. ~10% of Ukraine's $25B agri-export.</div>
+      </div>
+      <div class="tam-card t3">
+        <div class="tam-badge">SOM</div>
+        <div class="tam-val">$11M</div>
+        <div class="tam-name">Serviceable Obtainable Market</div>
+        <div class="tam-desc">Year 1–3: 5–7 snail farms + 10 wheat producers. Confirmed with partners.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TOKENOMICS ════════════════════════════════ -->
+<section class="tok-bg" id="token">
+  <div class="wrap">
+    <div class="section-label">Tokenomics</div>
+    <h2 class="section-title">$UAAGRO Token</h2>
+    <div class="tok-inner" style="margin-top:3rem;">
+      <div>
+        <div class="tok-meta">
+          <div class="tok-row"><span class="tok-row-l">Contract Type</span><span class="tok-row-v">SPL Token (Solana)</span></div>
+          <div class="tok-row"><span class="tok-row-l">Total Supply</span><span class="tok-row-v">1,000,000,000 $UAAGRO</span></div>
+          <div class="tok-row"><span class="tok-row-l">DEX Listing</span><span class="tok-row-v">Jupiter · Raydium</span></div>
+          <div class="tok-row"><span class="tok-row-l">Token Standard</span><span class="tok-row-v">SPL Token Extensions</span></div>
+        </div>
+        <div class="tok-util">
+          <div class="tu-card"><div class="tu-icon">🚀</div><div><div class="tu-title">Yield Boost (+3% APY)</div><div class="tu-desc">Stake $UAAGRO to boost any pool's APY by 3 percentage points</div></div></div>
+          <div class="tu-card"><div class="tu-icon">⚡</div><div><div class="tu-title">Early Access</div><div class="tu-desc">Priority allocation in new pools 48h before public release</div></div></div>
+          <div class="tu-card"><div class="tu-icon">🗳️</div><div><div class="tu-title">Governance Voting</div><div class="tu-desc">Vote on new pool additions, fee structure, and reserve fund usage</div></div></div>
+          <div class="tu-card"><div class="tu-icon">💸</div><div><div class="tu-title">Fee Discounts</div><div class="tu-desc">Up to 10% fee reduction for holders of 5,000+ $UAAGRO</div></div></div>
+        </div>
+      </div>
+      <div class="donut-side">
+        <svg viewBox="0 0 280 280" width="280" height="280" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="140" cy="140" r="100" fill="none" stroke="rgba(212,168,67,.05)" stroke-width="44"/>
+          <!-- Community 45% -->
+          <circle cx="140" cy="140" r="100" fill="none" stroke="#D4A843" stroke-width="44"
+            stroke-dasharray="282.6 628.3" stroke-dashoffset="0" transform="rotate(-90 140 140)"/>
+          <!-- Ecosystem 25% -->
+          <circle cx="140" cy="140" r="100" fill="none" stroke="#2C5F3D" stroke-width="44"
+            stroke-dasharray="157.1 628.3" stroke-dashoffset="-282.6" transform="rotate(-90 140 140)"/>
+          <!-- Team 15% -->
+          <circle cx="140" cy="140" r="100" fill="none" stroke="#4A8C60" stroke-width="44"
+            stroke-dasharray="94.2 628.3" stroke-dashoffset="-439.8" transform="rotate(-90 140 140)"/>
+          <!-- Private 10% -->
+          <circle cx="140" cy="140" r="100" fill="none" stroke="#8A6C25" stroke-width="44"
+            stroke-dasharray="62.8 628.3" stroke-dashoffset="-534" transform="rotate(-90 140 140)"/>
+          <!-- IDO 5% -->
+          <circle cx="140" cy="140" r="100" fill="none" stroke="#3A3530" stroke-width="44"
+            stroke-dasharray="31.4 628.3" stroke-dashoffset="-596.9" transform="rotate(-90 140 140)"/>
+          <circle cx="140" cy="140" r="78" fill="var(--card)"/>
+          <text x="140" y="133" text-anchor="middle" font-family="Sora,sans-serif" font-size="20" font-weight="800" fill="var(--text)">1B</text>
+          <text x="140" y="151" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="var(--muted)">SUPPLY</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="dl-row"><div class="dl-left"><div class="dl-dot" style="background:#D4A843"></div>Community Yield & Staking</div><span class="dl-pct">45%</span></div>
+          <div class="dl-row"><div class="dl-left"><div class="dl-dot" style="background:#2C5F3D"></div>Ecosystem Growth & LP</div><span class="dl-pct">25%</span></div>
+          <div class="dl-row"><div class="dl-left"><div class="dl-dot" style="background:#4A8C60"></div>Core Team & Advisors</div><span class="dl-pct">15%</span></div>
+          <div class="dl-row"><div class="dl-left"><div class="dl-dot" style="background:#8A6C25"></div>Private Sale</div><span class="dl-pct">10%</span></div>
+          <div class="dl-row"><div class="dl-left"><div class="dl-dot" style="background:#3A3530"></div>Public IDO</div><span class="dl-pct">5%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ ROADMAP ═══════════════════════════════════ -->
+<section>
+  <div class="wrap">
+    <div class="section-label">Roadmap</div>
+    <h2 class="section-title">What We're Building Toward</h2>
+    <div class="rm-grid">
+      <div class="rm-item done">
+        <div class="rm-dot">✓</div>
+        <div class="rm-q">Q3 2025</div>
+        <h4>Protocol Launch</h4>
+        <p>Wheat + Escargot pools live. Anchor smart contracts deployed. First investor deposits.</p>
+      </div>
+      <div class="rm-item now">
+        <div class="rm-dot">NOW</div>
+        <div class="rm-q">Q4 2025</div>
+        <h4>$UAAGRO Listing</h4>
+        <p>Jupiter DEX listing. Yield Boost activation. Independent security audit published.</p>
+      </div>
+      <div class="rm-item future">
+        <div class="rm-dot">Q2</div>
+        <div class="rm-q">Q2 2026</div>
+        <h4>Scale to $11M</h4>
+        <p>5–7 new snail farms + 10 wheat producers onboarded. SOM target achieved.</p>
+      </div>
+      <div class="rm-item future">
+        <div class="rm-dot">Q4</div>
+        <div class="rm-q">Q4 2026</div>
+        <h4>International Expansion</h4>
+        <p>New crops, new regions. Fully on-chain DAO governance live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TEAM ══════════════════════════════════════ -->
+<section class="team-bg" id="team">
+  <div class="wrap">
+    <div class="section-label">The Team</div>
+    <h2 class="section-title">Built by Agri + Web3 Operators</h2>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">AK</div>
+        <div class="team-name">Alex K.</div>
+        <div class="team-role">Founder & CEO</div>
+        <div class="team-bio">10+ years in TradFi Agribusiness. Early Solana builder. Managed $40M in agricultural finance.</div>
+        <a href="#" class="team-li">LinkedIn ↗</a>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:var(--card2); border-color: var(--border2);">MV</div>
+        <div class="team-name">Maria V.</div>
+        <div class="team-role">Head of Protocol</div>
+        <div class="team-bio">Former Rust dev at top DeFi protocols. Smart contract security expert. Anchor framework contributor.</div>
+        <a href="#" class="team-li">LinkedIn ↗</a>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:var(--card2); border-color: var(--border2);">DO</div>
+        <div class="team-name">Dmytro O.</div>
+        <div class="team-role">Agro-Operations</div>
+        <div class="team-bio">Manages physical farm verification and crop insurance policies. 8 years in Ukrainian agribusiness.</div>
+        <a href="#" class="team-li">LinkedIn ↗</a>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar" style="background:var(--card2); border-color: var(--border2);">ST</div>
+        <div class="team-name">Sarah T.</div>
+        <div class="team-role">Growth Lead</div>
+        <div class="team-bio">Scaling community and TVL. Previously marketing lead at Tier 1 CEX. Crypto native since 2017.</div>
+        <a href="#" class="team-li">LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ WHITELIST ═════════════════════════════════ -->
+<section id="waitlist">
+  <div class="wrap">
+    <div class="wl-box">
+      <div class="wl-left">
+        <div class="section-label">Early Access</div>
+        <h2>Be First In. <em>Get the Best APY.</em></h2>
+        <p>Whitelisted investors get priority access to the highest-APY pool allocations, including exotic new farm pools before public release. Plus $UAAGRO pre-sale access.</p>
+        <ul class="wl-perks">
+          <li>Priority allocation in new pools (48h head start)</li>
+          <li>Access to $UAAGRO token pre-sale pricing</li>
+          <li>Direct line to the founding team</li>
+          <li>Yield Boost activation on day one</li>
+        </ul>
+      </div>
+      <div>
+        <div style="margin-bottom:1.25rem;">
+          <div class="section-label">Apply for Whitelist</div>
+          <p style="font-size:.8rem; color:var(--muted);">~200 spots available. No financial commitment required.</p>
+        </div>
+        <div class="wl-form">
+          <input type="email" placeholder="Your email address">
+          <input type="text" placeholder="Solana wallet address (optional)">
+          <input type="number" placeholder="Desired investment amount (USDC)">
+          <button class="btn-wl">Join Waitlist →</button>
+          <p class="wl-note">No spam. No commitment. Just first-mover access.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FINAL CTA ═════════════════════════════════ -->
+<div class="final-cta">
+  <div class="wrap" style="position:relative; z-index:1;">
+    <h2>Ukrainian Soil.<br>Solana Speed. <span style="color:var(--gold)">Your Yield.</span></h2>
+    <p>Stop chasing volatile tokens. Start earning from real harvests. From $100, in USDC, on the world's fastest blockchain.</p>
+    <div class="final-ctas">
+      <a href="#pools" class="btn-primary" style="background:var(--gold); color:var(--black);">Start Investing →</a>
+      <a href="#waitlist" class="btn-ghost" style="border-color:rgba(255,255,255,.2); color:rgba(255,255,255,.7);">Join Whitelist</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════ FOOTER ════════════════════════════════════ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-wrap" style="margin-bottom:.5rem;">
+          <div class="logo-icon">🌾</div>
+          <span class="logo-name">ZERNOFI</span>
+        </div>
+        <p>Real yield from real assets. Bringing transparent, stable agricultural investments to the Solana blockchain.</p>
+        <div class="socials" style="margin-top:.85rem;">
+          <a href="#" class="soc-btn">𝕏</a>
+          <a href="#" class="soc-btn">TG</a>
+          <a href="#" class="soc-btn">DC</a>
+          <a href="#" class="soc-btn">GH</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <ul>
+          <li><a href="#pools">Invest</a></li>
+          <li><a href="#pools">Yield Calculator</a></li>
+          <li><a href="#token">Tokenomics</a></li>
+          <li><a href="#token">Governance</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#">Whitepaper</a></li>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#team">Team</a></li>
+          <li><a href="#">Audit Reports</a></li>
+          <li><a href="#">Press Kit</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RISK DISCLOSURE -->
+    <div class="risk-note">
+      <strong>Risk Disclosure:</strong> ZernoFi pools involve real-world agricultural risk including weather, market price fluctuations, and crop disease. While all pools carry physical crop insurance and reserves, APYs are targets — not guarantees. Past performance does not indicate future results. This is not financial advice. Invest only what you can afford to lose.
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 ZernoFi · Built for Solana Global Hackathon · All rights reserved</p>
+      <p>Not financial advice · Agricultural investments carry risk</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════ JAVASCRIPT ════════════════════════════════ -->
+<script>
+/* ─── HERO MINI CALCULATOR ────────────────────────────────────────────── */
+function heroCalc() {
+  const a = parseFloat(document.getElementById('h-amt').value) || 0;
+  const r = parseFloat(document.getElementById('h-pool').value) / 100;
+  const b = document.getElementById('h-boost').checked;
+  const fmt = v => '$' + Math.round(v).toLocaleString('en');
+  document.getElementById('h-base').textContent = fmt(a * r);
+  document.getElementById('h-boost-val').textContent = fmt(a * (r + (b ? 0.03 : 0)));
+}
+['h-amt','h-pool','h-boost'].forEach(id => {
+  const el = document.getElementById(id);
+  el && el.addEventListener('input', heroCalc);
+});
+heroCalc();
+
+/* ─── MAIN CALCULATOR ─────────────────────────────────────────────────── */
+function mainCalc() {
+  const a   = parseFloat(document.getElementById('c-amt').value) || 0;
+  const r   = parseFloat(document.getElementById('c-pool').value) / 100;
+  const dur = parseFloat(document.getElementById('c-dur').value) / 12 || 1;
+  const b   = document.getElementById('c-boost').checked;
+  const fmt = v => '$' + Math.round(v).toLocaleString('en');
+  const yBase   = a * r * dur;
+  const yBoosted = a * (r + 0.03) * dur;
+  document.getElementById('c-yield').textContent     = '+' + fmt(yBase);
+  document.getElementById('c-boost-val').textContent = '+' + fmt(yBoosted);
+  document.getElementById('c-total').textContent     = fmt(a + (b ? yBoosted : yBase));
+}
+['c-amt','c-pool','c-dur','c-boost'].forEach(id => {
+  const el = document.getElementById(id);
+  el && el.addEventListener('input', mainCalc);
+});
+mainCalc();
+
+/* ─── SCROLL ANIMATIONS ──────────────────────────────────────────────── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.animationPlayState = 'running';
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.anim').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  io.observe(el);
+});
+
+/* ─── PROGRESS BAR ANIMATION ─────────────────────────────────────────── */
+const progObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('[data-w]').forEach(bar => {
+        setTimeout(() => { bar.style.width = bar.dataset.w + '%'; }, 200);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.pools-grid').forEach(el => progObs.observe(el));
+</script>
+
+</body>
+</html>
