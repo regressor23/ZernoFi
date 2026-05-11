@@ -807,10 +807,18 @@ td.zernofi-col { color: var(--text); background: rgba(212,168,67,.03); border-le
 
 /* ─── TEAM ───────────────────────────────────────────────────────────── */
 .team-bg { background: var(--surface); border-top: .5px solid var(--border); border-bottom: .5px solid var(--border); }
-.team-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; margin-top: 3.5rem; }
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 3.5rem;
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+}
 .team-card {
   background: var(--card); border: .5px solid var(--border);
-  border-radius: var(--r2); padding: 1.75rem 1.4rem;
+  border-radius: var(--r2); padding: 2.25rem 2rem;
   text-align: center; transition: border-color .2s;
 }
 .team-card:hover { border-color: var(--border2); }
@@ -1105,21 +1113,13 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
               <option value="24">🐌 Escargot 24%</option>
             </select>
           </div>
-          <div class="dp-boost-row">
-            <label class="toggle">
-              <input type="checkbox" id="h-boost">
-              <div class="toggle-track"></div>
-              <div class="toggle-thumb"></div>
-            </label>
-            <span>Yield Boost via <strong>$UAAGRO</strong> staking (+3%)</span>
-          </div>
           <div class="dp-result">
             <div class="dpr-item">
               <div class="dpr-item-label">Annual Yield</div>
               <div class="dpr-item-val" id="h-base">$185</div>
             </div>
             <div class="dpr-item">
-              <div class="dpr-item-label">With Boost</div>
+              <div class="dpr-item-label">With $UAAGRO Boost</div>
               <div class="dpr-item-val boosted" id="h-boost-val">$215</div>
             </div>
           </div>
@@ -1340,7 +1340,7 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
       <div class="calc-results">
         <div class="cr-item"><div class="cr-l">Estimated Yield</div><div class="cr-v g" id="c-yield">+$1,850</div><div class="cr-sub">base APY only</div></div>
         <div class="cr-item"><div class="cr-l">With $UAAGRO Boost</div><div class="cr-v" id="c-boost-val">+$2,150</div><div class="cr-sub">+3% from staking</div></div>
-        <div class="cr-item"><div class="cr-l">Total Balance</div><div class="cr-v" id="c-total">$11,850</div><div class="cr-sub">principal + yield</div></div>
+        <div class="cr-item"><div class="cr-l">Your Total Balance</div><div class="cr-v" id="c-total">$11,850</div><div class="cr-sub" id="c-total-sub">principal + base yield</div></div>
       </div>
     </div>
   </div>
@@ -1514,32 +1514,18 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
     <h2 class="section-title">Built by Agri + Web3 Operators</h2>
     <div class="team-grid">
       <div class="team-card">
-        <div class="team-avatar">AK</div>
-        <div class="team-name">Alex K.</div>
-        <div class="team-role">Founder & CEO</div>
-        <div class="team-bio">10+ years in TradFi Agribusiness. Early Solana builder. Managed $40M in agricultural finance.</div>
-        <a href="#" class="team-li">LinkedIn ↗</a>
+        <div class="team-avatar">OM</div>
+        <div class="team-name">Oleksii Marek</div>
+        <div class="team-role">Co-founder &amp; Strategy</div>
+        <div class="team-bio">Co-founder of a Web2 marketing agency. Brings deep go-to-market expertise, partnership building, and operational discipline to ZernoFi's growth.</div>
+        <a href="https://www.linkedin.com/in/oleksii-marek-37326344/" target="_blank" rel="noopener" class="team-li">LinkedIn ↗</a>
       </div>
       <div class="team-card">
-        <div class="team-avatar" style="background:var(--card2); border-color: var(--border2);">MV</div>
-        <div class="team-name">Maria V.</div>
-        <div class="team-role">Head of Protocol</div>
-        <div class="team-bio">Former Rust dev at top DeFi protocols. Smart contract security expert. Anchor framework contributor.</div>
-        <a href="#" class="team-li">LinkedIn ↗</a>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar" style="background:var(--card2); border-color: var(--border2);">DO</div>
-        <div class="team-name">Dmytro O.</div>
-        <div class="team-role">Agro-Operations</div>
-        <div class="team-bio">Manages physical farm verification and crop insurance policies. 8 years in Ukrainian agribusiness.</div>
-        <a href="#" class="team-li">LinkedIn ↗</a>
-      </div>
-      <div class="team-card">
-        <div class="team-avatar" style="background:var(--card2); border-color: var(--border2);">ST</div>
-        <div class="team-name">Sarah T.</div>
-        <div class="team-role">Growth Lead</div>
-        <div class="team-bio">Scaling community and TVL. Previously marketing lead at Tier 1 CEX. Crypto native since 2017.</div>
-        <a href="#" class="team-li">LinkedIn ↗</a>
+        <div class="team-avatar" style="background:var(--card2); border-color: var(--border2);">MM</div>
+        <div class="team-name">Maryna Marek</div>
+        <div class="team-role">Co-founder &amp; Data / BI</div>
+        <div class="team-bio">Senior BI Analyst with strong data, analytics, and reporting background. Owns ZernoFi's risk modeling, pool analytics, and investor reporting.</div>
+        <a href="https://www.linkedin.com/in/maryna-marek-9742a19a/" target="_blank" rel="noopener" class="team-li">LinkedIn ↗</a>
       </div>
     </div>
   </div>
@@ -1648,12 +1634,13 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
 <script>
 /* ─── HERO MINI CALCULATOR ────────────────────────────────────────────── */
 function heroCalc() {
-  const a = parseFloat(document.getElementById('h-amt').value) || 0;
+  const aRaw = parseFloat(document.getElementById('h-amt').value);
+  const a = (isNaN(aRaw) || aRaw < 0) ? 0 : aRaw;
   const r = parseFloat(document.getElementById('h-pool').value) / 100;
-  const b = document.getElementById('h-boost').checked;
   const fmt = v => '$' + Math.round(v).toLocaleString('en');
-  document.getElementById('h-base').textContent = fmt(a * r);
-  document.getElementById('h-boost-val').textContent = fmt(a * (r + (b ? 0.03 : 0)));
+  // Always show both — base (no boost) and boosted (+3%). User sees the value of $UAAGRO at a glance.
+  document.getElementById('h-base').textContent       = fmt(a * r);
+  document.getElementById('h-boost-val').textContent  = fmt(a * (r + 0.03));
 }
 ['h-amt','h-pool','h-boost'].forEach(id => {
   const el = document.getElementById(id);
@@ -1663,16 +1650,24 @@ heroCalc();
 
 /* ─── MAIN CALCULATOR ─────────────────────────────────────────────────── */
 function mainCalc() {
-  const a   = parseFloat(document.getElementById('c-amt').value) || 0;
-  const r   = parseFloat(document.getElementById('c-pool').value) / 100;
-  const dur = parseFloat(document.getElementById('c-dur').value) / 12 || 1;
-  const b   = document.getElementById('c-boost').checked;
+  const aRaw = parseFloat(document.getElementById('c-amt').value);
+  const a = (isNaN(aRaw) || aRaw < 0) ? 0 : aRaw;
+  const r = parseFloat(document.getElementById('c-pool').value) / 100;
+  const dRaw = parseFloat(document.getElementById('c-dur').value);
+  // Clamp duration to [1, 24] months; if empty/invalid → 12
+  const months = (isNaN(dRaw) || dRaw < 1) ? 12 : Math.min(dRaw, 24);
+  const dur = months / 12;
+  const b = document.getElementById('c-boost').checked;
   const fmt = v => '$' + Math.round(v).toLocaleString('en');
-  const yBase   = a * r * dur;
+  const yBase    = a * r * dur;
   const yBoosted = a * (r + 0.03) * dur;
+  // First two columns ALWAYS show both scenarios — for comparison.
   document.getElementById('c-yield').textContent     = '+' + fmt(yBase);
   document.getElementById('c-boost-val').textContent = '+' + fmt(yBoosted);
+  // Total: user-selected scenario via the boost toggle.
   document.getElementById('c-total').textContent     = fmt(a + (b ? yBoosted : yBase));
+  const subEl = document.getElementById('c-total-sub');
+  if (subEl) subEl.textContent = b ? 'principal + boosted yield' : 'principal + base yield';
 }
 ['c-amt','c-pool','c-dur','c-boost'].forEach(id => {
   const el = document.getElementById(id);
