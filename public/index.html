@@ -5,6 +5,37 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ZernoFi — Real Yield from Ukrainian Agribusiness on Solana</title>
 <meta name="description" content="The first RWA aggregator for Ukrainian agriculture on Solana. Earn real USDC yield from wheat and snail farms. From $100. Zero crypto-market volatility.">
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<meta name="theme-color" content="#0A0906">
+
+<!-- Open Graph (Facebook, Telegram, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.zernofi.org/">
+<meta property="og:title" content="ZernoFi — Real Yield from Ukrainian Agribusiness on Solana">
+<meta property="og:description" content="The first RWA aggregator for Ukrainian agriculture on Solana. Earn real USDC yield from verified wheat and snail farms. From $100.">
+<meta property="og:image" content="https://www.zernofi.org/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ZernoFi — RWA Aggregator on Solana">
+<meta property="og:site_name" content="ZernoFi">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://www.zernofi.org/">
+<meta name="twitter:title" content="ZernoFi — Real Yield from Ukrainian Agribusiness on Solana">
+<meta name="twitter:description" content="The first RWA aggregator for Ukrainian agriculture on Solana. Earn real USDC yield from verified wheat and snail farms. From $100.">
+<meta name="twitter:image" content="https://www.zernofi.org/og-image.jpg">
+
+<link rel="canonical" href="https://www.zernofi.org/">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -93,11 +124,14 @@ nav {
 }
 .logo-wrap { display: flex; align-items: center; gap: 10px; }
 .logo-icon {
-  width: 32px; height: 32px;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-  border-radius: 8px;
+  width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
+  background: transparent;
+}
+.logo-icon img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  display: block;
 }
 .logo-name {
   font-size: 1.1rem; font-weight: 800;
@@ -132,7 +166,169 @@ nav {
   letter-spacing: .02em;
 }
 .btn-wallet:hover { background: var(--card2); border-color: var(--border3); }
+.btn-wallet.connected { border-color: var(--green3); color: var(--green3); }
+.btn-wallet.connected:hover { background: rgba(76,175,125,.05); }
 .wallet-dot { width: 6px; height: 6px; background: var(--green3); border-radius: 50%; }
+.wallet-dot.idle { background: var(--muted2); }
+.wallet-dot.connected {
+  background: var(--green3);
+  box-shadow: 0 0 0 0 rgba(76,175,125,.5);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(76,175,125,.5); }
+  70%  { box-shadow: 0 0 0 6px rgba(76,175,125,0); }
+  100% { box-shadow: 0 0 0 0 rgba(76,175,125,0); }
+}
+
+/* ─── WALLET MODAL ───────────────────────────────────────────────────── */
+.wm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(10,9,6,.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 1rem;
+  animation: wmFade .2s ease;
+}
+.wm-overlay.open { display: flex; }
+@keyframes wmFade { from { opacity: 0; } to { opacity: 1; } }
+
+.wm-card {
+  background: var(--card);
+  border: 1px solid var(--border3);
+  border-radius: 20px;
+  padding: 2rem 1.75rem 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(212,168,67,.08);
+  animation: wmSlide .25s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes wmSlide { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.wm-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: .35rem;
+}
+.wm-title {
+  font-size: 1.15rem; font-weight: 700; color: var(--text);
+  letter-spacing: -.01em;
+}
+.wm-close {
+  background: transparent; border: none;
+  color: var(--muted); font-size: 1.5rem;
+  cursor: pointer; padding: 0; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  transition: all .15s;
+}
+.wm-close:hover { background: var(--card2); color: var(--text); }
+
+.wm-sub {
+  color: var(--muted); font-size: .85rem;
+  margin-bottom: 1.5rem; line-height: 1.5;
+}
+
+.wm-list { display: flex; flex-direction: column; gap: .5rem; }
+.wm-item {
+  display: flex; align-items: center; gap: .9rem;
+  padding: .85rem 1rem;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+}
+.wm-item:hover {
+  border-color: var(--gold);
+  background: var(--gold-bg);
+  transform: translateY(-1px);
+}
+.wm-icon {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; font-weight: 800;
+  flex-shrink: 0;
+}
+.wm-icon.phantom  { background: linear-gradient(135deg,#AB9FF2,#534BB1); color: #fff; }
+.wm-icon.solflare { background: linear-gradient(135deg,#FFB938,#FC8B19); color: #fff; }
+.wm-icon.backpack { background: linear-gradient(135deg,#E33E3F,#A02324); color: #fff; }
+.wm-info { flex: 1; min-width: 0; }
+.wm-name {
+  font-size: .95rem; font-weight: 600; color: var(--text);
+  margin-bottom: 1px;
+}
+.wm-status { font-size: .72rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+.wm-status.detected { color: var(--green3); }
+.wm-arrow { color: var(--muted); font-size: 1rem; }
+
+.wm-footer {
+  margin-top: 1.2rem; padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: .72rem; color: var(--muted);
+  text-align: center; line-height: 1.5;
+}
+.wm-footer a { color: var(--gold); }
+
+.wm-connected {
+  text-align: center; padding: .5rem 0 1rem;
+}
+.wm-connected-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(76,175,125,.12);
+  color: var(--green3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto 1rem;
+  border: 1px solid rgba(76,175,125,.3);
+}
+.wm-addr {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .9rem; color: var(--gold);
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  padding: .7rem .9rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  word-break: break-all;
+}
+.wm-disconnect {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  padding: .6rem 1rem;
+  border-radius: 8px;
+  font-size: .8rem; font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+}
+.wm-disconnect:hover { border-color: var(--red); color: var(--red); }
+
+/* Toast notification */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--card); border: 1px solid var(--gold);
+  color: var(--text); padding: .85rem 1.1rem;
+  border-radius: 12px; font-size: .85rem;
+  z-index: 1100;
+  display: none;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+  max-width: 320px;
+  animation: tSlide .25s ease;
+}
+.toast.show { display: block; }
+.toast.success { border-color: var(--green3); }
+.toast.error   { border-color: var(--red); }
+@keyframes tSlide { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
 /* ─── HACKATHON BANNER ───────────────────────────────────────────────── */
 .hbanner {
@@ -747,7 +943,7 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
 <!-- ══════════════════════════ NAV ═══════════════════════════════════════ -->
 <nav>
   <div class="logo-wrap">
-    <div class="logo-icon">🌾</div>
+    <div class="logo-icon"><img src="/logo.png" alt="ZernoFi"></div>
     <span class="logo-name">ZERNOFI</span>
   </div>
   <ul class="nav-links">
@@ -759,12 +955,67 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
   </ul>
   <div class="nav-right">
     <a href="/app.html" class="btn-open-app">Open App →</a>
-    <button class="btn-wallet">
-      <div class="wallet-dot"></div>
-      Connect Wallet
+    <button class="btn-wallet" id="walletBtn" onclick="openWalletModal()">
+      <div class="wallet-dot idle" id="walletDot"></div>
+      <span id="walletLabel">Connect Wallet</span>
     </button>
   </div>
 </nav>
+
+<!-- ══════════════════════════ WALLET MODAL ════════════════════════════════ -->
+<div class="wm-overlay" id="walletModal" onclick="if(event.target===this)closeWalletModal()">
+  <div class="wm-card" id="walletCard">
+    <div class="wm-header">
+      <div class="wm-title" id="wmTitle">Connect a wallet</div>
+      <button class="wm-close" onclick="closeWalletModal()" aria-label="Close">×</button>
+    </div>
+    <div class="wm-sub" id="wmSub">Choose a Solana wallet to connect to ZernoFi. Your wallet stays on your device — we never see your keys.</div>
+
+    <div id="wmListView">
+      <div class="wm-list">
+        <button class="wm-item" onclick="connectWallet('phantom')">
+          <div class="wm-icon phantom">👻</div>
+          <div class="wm-info">
+            <div class="wm-name">Phantom</div>
+            <div class="wm-status" id="status-phantom">Detecting…</div>
+          </div>
+          <div class="wm-arrow">→</div>
+        </button>
+        <button class="wm-item" onclick="connectWallet('solflare')">
+          <div class="wm-icon solflare">☀</div>
+          <div class="wm-info">
+            <div class="wm-name">Solflare</div>
+            <div class="wm-status" id="status-solflare">Detecting…</div>
+          </div>
+          <div class="wm-arrow">→</div>
+        </button>
+        <button class="wm-item" onclick="connectWallet('backpack')">
+          <div class="wm-icon backpack">B</div>
+          <div class="wm-info">
+            <div class="wm-name">Backpack</div>
+            <div class="wm-status" id="status-backpack">Detecting…</div>
+          </div>
+          <div class="wm-arrow">→</div>
+        </button>
+      </div>
+      <div class="wm-footer">
+        New to Solana wallets? Start with <a href="https://phantom.app" target="_blank" rel="noopener">Phantom</a> — works on browser &amp; mobile.
+      </div>
+    </div>
+
+    <div id="wmConnectedView" style="display:none;">
+      <div class="wm-connected">
+        <div class="wm-connected-icon">✓</div>
+        <div style="font-size:.85rem; color:var(--muted); margin-bottom:.25rem;">Connected via <span id="wmProvider" style="color:var(--text); font-weight:600;"></span></div>
+        <div class="wm-addr" id="wmFullAddr"></div>
+        <button class="wm-disconnect" onclick="disconnectWallet()">Disconnect</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <!-- HACKATHON BANNER -->
 <div class="hbanner">🏆 <span>Built for the Solana Global Hackathon</span> &nbsp;·&nbsp; RWA Track &nbsp;·&nbsp; Real Assets. Real Yield.</div>
@@ -789,7 +1040,7 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
         </p>
         <div class="hero-ctas anim d4">
           <a href="#pools" class="btn-primary">Start Investing →</a>
-          <a href="#" class="btn-ghost">📄 Read Whitepaper</a>
+          <a href="/whitepaper.pdf" target="_blank" class="btn-ghost">📄 Read Whitepaper</a>
         </div>
         <div class="trust-pills anim d4">
           <span class="tpill">Anchor Audited</span>
@@ -1002,7 +1253,7 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
             <span class="pctag ok">✓ Pyth Oracles</span>
             <span class="pctag ok">✓ Anchor Audited</span>
           </div>
-          <a href="#" class="pc-cta">Supply USDC →</a>
+          <a href="#waitlist" class="pc-cta">Supply USDC →</a>
         </div>
       </div>
 
@@ -1032,7 +1283,7 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
             <span class="pctag ok">✓ Vet Insurance</span>
             <span class="pctag ok">✓ Anchor Audited</span>
           </div>
-          <a href="#" class="pc-cta green">Supply USDC →</a>
+          <a href="#waitlist" class="pc-cta green">Supply USDC →</a>
         </div>
       </div>
 
@@ -1344,15 +1595,12 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="logo-wrap" style="margin-bottom:.5rem;">
-          <div class="logo-icon">🌾</div>
+          <div class="logo-icon"><img src="/logo.png" alt="ZernoFi"></div>
           <span class="logo-name">ZERNOFI</span>
         </div>
         <p>Real yield from real assets. Bringing transparent, stable agricultural investments to the Solana blockchain.</p>
         <div class="socials" style="margin-top:.85rem;">
-          <a href="#" class="soc-btn">𝕏</a>
-          <a href="#" class="soc-btn">TG</a>
-          <a href="#" class="soc-btn">DC</a>
-          <a href="#" class="soc-btn">GH</a>
+          <a href="https://x.com/RegressorPU/status/2036130891844423718" target="_blank" rel="noopener" class="soc-btn" aria-label="Twitter / X">𝕏</a>
         </div>
       </div>
       <div class="footer-col">
@@ -1367,7 +1615,7 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
       <div class="footer-col">
         <h5>Resources</h5>
         <ul>
-          <li><a href="#">Whitepaper</a></li>
+          <li><a href="/whitepaper.pdf" target="_blank">Whitepaper</a></li>
           <li><a href="#">Documentation</a></li>
           <li><a href="#">Contact Us</a></li>
           <li><a href="#">Terms of Service</a></li>
@@ -1457,6 +1705,165 @@ const progObs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.3 });
 document.querySelectorAll('.pools-grid').forEach(el => progObs.observe(el));
+
+/* ─── WALLET CONNECTION ───────────────────────────────────────────────── */
+const WALLETS = {
+  phantom:  { name: 'Phantom',  url: 'https://phantom.app',  check: () => window?.phantom?.solana?.isPhantom || window?.solana?.isPhantom },
+  solflare: { name: 'Solflare', url: 'https://solflare.com', check: () => window?.solflare?.isSolflare },
+  backpack: { name: 'Backpack', url: 'https://backpack.app', check: () => window?.backpack?.isBackpack || window?.xnft?.solana },
+};
+let connectedWallet = null;  // { provider: 'phantom', address: '...', publicKey: PublicKey }
+
+function shortAddr(addr) {
+  return addr.slice(0, 4) + '…' + addr.slice(-4);
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+function refreshDetection() {
+  Object.entries(WALLETS).forEach(([k, w]) => {
+    const el = document.getElementById('status-' + k);
+    if (!el) return;
+    const detected = w.check();
+    el.textContent = detected ? '● Detected' : 'Not installed';
+    el.className = 'wm-status' + (detected ? ' detected' : '');
+  });
+}
+
+function openWalletModal() {
+  if (connectedWallet) {
+    // Already connected — show connected view
+    document.getElementById('wmListView').style.display = 'none';
+    document.getElementById('wmConnectedView').style.display = 'block';
+    document.getElementById('wmTitle').textContent = 'Wallet connected';
+    document.getElementById('wmSub').textContent = 'You\'re ready to invest in agricultural pools.';
+    document.getElementById('wmProvider').textContent = WALLETS[connectedWallet.provider].name;
+    document.getElementById('wmFullAddr').textContent = connectedWallet.address;
+  } else {
+    document.getElementById('wmListView').style.display = 'block';
+    document.getElementById('wmConnectedView').style.display = 'none';
+    document.getElementById('wmTitle').textContent = 'Connect a wallet';
+    document.getElementById('wmSub').textContent = 'Choose a Solana wallet to connect to ZernoFi. Your wallet stays on your device — we never see your keys.';
+    refreshDetection();
+  }
+  document.getElementById('walletModal').classList.add('open');
+}
+
+function closeWalletModal() {
+  document.getElementById('walletModal').classList.remove('open');
+}
+
+async function connectWallet(provider) {
+  const w = WALLETS[provider];
+  if (!w.check()) {
+    // Not installed — open install page
+    showToast(w.name + ' is not installed — opening download page.', '');
+    window.open(w.url, '_blank', 'noopener');
+    return;
+  }
+
+  try {
+    let resp;
+    if (provider === 'phantom') {
+      const phantom = window.phantom?.solana || window.solana;
+      resp = await phantom.connect();
+    } else if (provider === 'solflare') {
+      await window.solflare.connect();
+      resp = { publicKey: window.solflare.publicKey };
+    } else if (provider === 'backpack') {
+      const bp = window.backpack || window.xnft?.solana;
+      resp = await bp.connect();
+      if (!resp?.publicKey && bp.publicKey) resp = { publicKey: bp.publicKey };
+    }
+
+    const address = resp.publicKey.toString();
+    connectedWallet = { provider, address, publicKey: resp.publicKey };
+
+    // Persist for session (in-memory only — works across page loads via auto-reconnect below)
+    sessionStorage.setItem('zf_wallet', JSON.stringify({ provider, address }));
+
+    updateWalletUI();
+    showToast('Connected to ' + w.name + ' ✓', 'success');
+    setTimeout(closeWalletModal, 800);
+  } catch (err) {
+    console.error('Wallet connect failed:', err);
+    if (err?.code === 4001 || /reject/i.test(err?.message || '')) {
+      showToast('Connection cancelled.', '');
+    } else {
+      showToast('Failed to connect: ' + (err?.message || 'unknown error'), 'error');
+    }
+  }
+}
+
+async function disconnectWallet() {
+  if (!connectedWallet) return;
+  try {
+    const p = connectedWallet.provider;
+    if (p === 'phantom') {
+      const phantom = window.phantom?.solana || window.solana;
+      await phantom?.disconnect?.();
+    } else if (p === 'solflare') {
+      await window.solflare?.disconnect?.();
+    } else if (p === 'backpack') {
+      const bp = window.backpack || window.xnft?.solana;
+      await bp?.disconnect?.();
+    }
+  } catch (e) { /* silent */ }
+  connectedWallet = null;
+  sessionStorage.removeItem('zf_wallet');
+  updateWalletUI();
+  closeWalletModal();
+  showToast('Wallet disconnected.', '');
+}
+
+function updateWalletUI() {
+  const btn   = document.getElementById('walletBtn');
+  const dot   = document.getElementById('walletDot');
+  const label = document.getElementById('walletLabel');
+  if (connectedWallet) {
+    btn.classList.add('connected');
+    dot.className = 'wallet-dot connected';
+    label.textContent = shortAddr(connectedWallet.address);
+  } else {
+    btn.classList.remove('connected');
+    dot.className = 'wallet-dot idle';
+    label.textContent = 'Connect Wallet';
+  }
+}
+
+// Auto-reconnect on page load if previously connected this session
+window.addEventListener('load', async () => {
+  const saved = sessionStorage.getItem('zf_wallet');
+  if (!saved) return;
+  try {
+    const { provider } = JSON.parse(saved);
+    const w = WALLETS[provider];
+    if (!w?.check()) return;
+
+    let resp;
+    if (provider === 'phantom') {
+      const phantom = window.phantom?.solana || window.solana;
+      // Try silent reconnect — only succeeds if user previously approved auto-connect
+      resp = await phantom.connect({ onlyIfTrusted: true });
+    } else if (provider === 'solflare') {
+      if (window.solflare.isConnected) resp = { publicKey: window.solflare.publicKey };
+    }
+    if (resp?.publicKey) {
+      connectedWallet = { provider, address: resp.publicKey.toString(), publicKey: resp.publicKey };
+      updateWalletUI();
+    }
+  } catch (e) { /* silent — user didn't pre-approve */ }
+});
+
+// ESC to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeWalletModal();
+});
 </script>
 
 </body>

@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ZernoFi — Dashboard</title>
+<meta name="description" content="ZernoFi investor dashboard — track your USDC yield from Ukrainian wheat and snail farms on Solana.">
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+<meta name="theme-color" content="#0A0906">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.zernofi.org/app.html">
+<meta property="og:title" content="ZernoFi Dashboard — Manage Your Agricultural Investments">
+<meta property="og:description" content="Track USDC yield from Ukrainian wheat and snail farm pools on Solana.">
+<meta property="og:image" content="https://www.zernofi.org/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.zernofi.org/og-image.jpg">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -76,10 +94,15 @@ button{font-family:inherit;cursor:pointer;}
   text-decoration:none;
 }
 .logo-badge{
-  width:30px;height:30px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-dim));
-  border-radius:7px;display:flex;align-items:center;justify-content:center;
-  font-size:15px;flex-shrink:0;
+  width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  background:transparent;
+}
+.logo-badge img{
+  width:100%;height:100%;
+  object-fit:contain;
+  display:block;
 }
 .logo-name{font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-.01em;}
 .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto;}
@@ -494,7 +517,7 @@ button{font-family:inherit;cursor:pointer;}
   <!-- ── SIDEBAR ──────────────────────────────────────────────────── -->
   <aside class="sidebar">
     <a href="/" class="sidebar-logo">
-      <div class="logo-badge">🌾</div>
+      <div class="logo-badge"><img src="/logo.png" alt="ZernoFi"></div>
       <span class="logo-name">ZERNOFI</span>
     </a>
 
