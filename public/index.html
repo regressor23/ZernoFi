@@ -156,6 +156,26 @@ nav {
   white-space: nowrap;
 }
 .btn-open-app:hover { background: var(--gold2); border-color: var(--gold2); transform: translateY(-1px); }
+.btn-demo {
+  padding: .5rem .95rem;
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+  font-size: .8rem; font-weight: 600;
+  text-decoration: none;
+  transition: all .2s;
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .4rem;
+}
+.btn-demo:hover { background: var(--gold-bg); border-color: var(--gold); }
+.btn-demo .live-dot {
+  width: 7px; height: 7px;
+  background: var(--green3);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(76,175,125,.5);
+  animation: pulse 2s infinite;
+}
 .btn-wallet {
   display: flex; align-items: center; gap: 7px;
   background: var(--card); border: .5px solid var(--border2);
@@ -962,6 +982,7 @@ footer { background: var(--ink); padding: 3.5rem 0 2rem; border-top: .5px solid 
     <li><a href="#waitlist">Waitlist</a></li>
   </ul>
   <div class="nav-right">
+    <a href="/demo.html" class="btn-demo"><span class="live-dot"></span>90s Demo</a>
     <a href="/app.html" class="btn-open-app">Open App →</a>
     <button class="btn-wallet" id="walletBtn" onclick="openWalletModal()">
       <div class="wallet-dot idle" id="walletDot"></div>

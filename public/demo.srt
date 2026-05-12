@@ -1,0 +1,79 @@
+1
+00:00:00,500 --> 00:00:04,000
+Meet ZernoFi — the first RWA aggregator for Ukrainian agribusiness…
+
+2
+00:00:04,000 --> 00:00:09,000
+Built on Solana. Yield paid in USDC. No token volatility.
+
+3
+00:00:09,500 --> 00:00:14,000
+The world's farmers face a $160 billion annual financing gap.
+
+4
+00:00:14,000 --> 00:00:20,000
+Banks take months. Crypto offers no real-asset yield. Both markets are broken.
+
+5
+00:00:20,500 --> 00:00:25,000
+ZernoFi fixes both with three simple steps.
+
+6
+00:00:25,000 --> 00:00:29,500
+Deposit USDC into a verified farm pool from just $100.
+
+7
+00:00:29,500 --> 00:00:33,000
+Crops grow. You earn USDC plus $UAAGRO tokens.
+
+8
+00:00:33,500 --> 00:00:38,500
+Two live pools with pre-vetted Ukrainian partners.
+
+9
+00:00:38,500 --> 00:00:42,500
+Premium Wheat at 18.5% APY.
+
+10
+00:00:42,500 --> 00:00:45,000
+Escargot Farm at 24% APY — EU export grade.
+
+11
+00:00:45,500 --> 00:00:50,000
+Calculate your returns in seconds.
+
+12
+00:00:50,000 --> 00:00:54,000
+$10,000 in Wheat equals +$1,850 base yield.
+
+13
+00:00:54,000 --> 00:00:58,000
+With $UAAGRO boost: +$2,150. A clear 16% bonus.
+
+14
+00:00:58,500 --> 00:01:03,000
+Every position, every payout, every reward — tracked live.
+
+15
+00:01:03,000 --> 00:01:10,000
+Portfolio value, $UAAGRO balance, pool progress — all in one dashboard.
+
+16
+00:01:10,500 --> 00:01:15,000
+$UAAGRO is optional. But it's your edge.
+
+17
+00:01:15,000 --> 00:01:18,500
+Stake for +3% APY boost. Vote on governance.
+
+18
+00:01:18,500 --> 00:01:22,000
+Sell on Jupiter anytime — secondary liquidity for an illiquid asset.
+
+19
+00:01:22,500 --> 00:01:26,000
+This is the bridge between real farms and real DeFi.
+
+20
+00:01:26,000 --> 00:01:30,000
+Visit www.zernofi.org. Start with $100.

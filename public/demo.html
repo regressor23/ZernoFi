@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZernoFi — 90-Second Demo</title>
+<meta name="description" content="A 90-second walkthrough of ZernoFi — Real Yield from Ukrainian Agribusiness on Solana.">
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+
+<!-- OG -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.zernofi.org/demo.html">
+<meta property="og:title" content="ZernoFi — 90-Second Demo">
+<meta property="og:description" content="See how ZernoFi turns Ukrainian wheat & snail farms into stable USDC yield on Solana.">
+<meta property="og:image" content="https://www.zernofi.org/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.zernofi.org/og-image.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ─── DESIGN TOKENS (matching main site) ──────────────────────────────── */
+:root {
+  --black:   #0A0906;
+  --surface: #0F0D09;
+  --card:    #14110C;
+  --card2:   #1A1612;
+  --border:  #2A2520;
+  --border2: #3D352B;
+  --border3: #5C4D2F;
+  --gold:    #D4A843;
+  --gold2:   #E8BA55;
+  --gold-dim:#8A6C25;
+  --gold-bg: rgba(212,168,67,.08);
+  --text:    #E8E2D8;
+  --muted:   #9A958A;
+  --muted2:  #6B6560;
+  --green:   #2A3E2A;
+  --green2:  #3A5A3A;
+  --green3:  #4CAF7D;
+  --green-bg:rgba(76,175,125,.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: 'Sora', system-ui, sans-serif;
+  background: #000;
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── STAGE (16:9, scales to viewport) ────────────────────────────────── */
+.stage-wrap {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #1a1410 0%, #000 70%);
+}
+.stage {
+  position: relative;
+  width: 1280px; height: 720px;
+  max-width: 95vw; max-height: 95vh;
+  aspect-ratio: 16/9;
+  background: var(--black);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 30px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(212,168,67,.15);
+}
+@media (max-aspect-ratio: 16/9) {
+  .stage { width: 95vw; height: calc(95vw * 9 / 16); }
+}
+@media (min-aspect-ratio: 16/9) {
+  .stage { height: 95vh; width: calc(95vh * 16 / 9); }
+}
+
+/* Subtle grain texture */
+.stage::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size: 3px 3px;
+  pointer-events: none; z-index: 1;
+}
+
+/* ─── SCENE BASE ──────────────────────────────────────────────────────── */
+.scene {
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity .6s ease;
+  display: flex; align-items: center; justify-content: center;
+  padding: 5%;
+  z-index: 2;
+}
+.scene.active { opacity: 1; z-index: 3; }
+
+/* Ken-Burns drift for subtle motion within static scenes */
+@keyframes drift {
+  from { transform: scale(1) translate(0,0); }
+  to   { transform: scale(1.04) translate(-1%, -1%); }
+}
+.scene-content { animation: drift 12s ease-out forwards; will-change: transform; width: 100%; }
+.scene:not(.active) .scene-content { animation: none; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 1 — OPEN (logo intro)
+═══════════════════════════════════════════════════════════════════════ */
+.s-open { background: radial-gradient(ellipse at center, #1a1410 0%, var(--black) 70%); }
+.s-open-inner {
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+}
+.s-open-logo {
+  width: 140px; height: 140px;
+  opacity: 0; transform: scale(.5) rotate(-15deg);
+  filter: drop-shadow(0 10px 40px rgba(212,168,67,.4));
+}
+.s-open.active .s-open-logo {
+  animation: logoIn 1s cubic-bezier(.2,.9,.3,1.2) .2s forwards;
+}
+@keyframes logoIn { to { opacity: 1; transform: scale(1) rotate(0deg); } }
+
+.s-open-wordmark {
+  font-family: 'Sora', sans-serif;
+  font-size: 4.5rem; font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--text);
+  opacity: 0; transform: translateY(20px);
+  background: linear-gradient(135deg, var(--text) 0%, var(--gold) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.s-open.active .s-open-wordmark {
+  animation: slideUp .8s cubic-bezier(.2,.9,.3,1) .9s forwards;
+}
+@keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+.s-open-tagline {
+  font-size: 1.3rem; color: var(--muted);
+  letter-spacing: .03em;
+  opacity: 0;
+  max-width: 720px; line-height: 1.4;
+}
+.s-open.active .s-open-tagline {
+  animation: fadeIn .8s ease 1.4s forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+
+.s-open-badge {
+  display: inline-flex; align-items: center; gap: .5rem;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  padding: .4rem 1rem;
+  border-radius: 100px;
+  font-size: .8rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0;
+  margin-top: .8rem;
+}
+.s-open.active .s-open-badge {
+  animation: fadeIn .6s ease 1.9s forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 2 — PROBLEM
+═══════════════════════════════════════════════════════════════════════ */
+.s-problem { background: var(--black); }
+.s-problem .scene-content { max-width: 1080px; }
+.s-prob-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .9rem; color: var(--gold);
+  letter-spacing: .15em; text-transform: uppercase;
+  margin-bottom: 1.5rem; text-align: center;
+  opacity: 0;
+}
+.s-prob-title {
+  font-size: 3.5rem; font-weight: 800; line-height: 1.1;
+  text-align: center; color: var(--text);
+  margin-bottom: 3rem; letter-spacing: -.02em;
+  opacity: 0;
+}
+.s-prob-title em {
+  color: #C76A4A;
+  font-style: normal;
+  font-weight: 800;
+}
+.s-prob-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+}
+.s-prob-stat {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px; padding: 1.8rem 1.4rem;
+  text-align: center;
+  opacity: 0; transform: translateY(30px);
+}
+.s-prob-num {
+  font-size: 3rem; font-weight: 800;
+  color: var(--gold);
+  letter-spacing: -.03em;
+  margin-bottom: .4rem;
+  font-family: 'Sora', sans-serif;
+}
+.s-prob-lbl {
+  font-size: .85rem; color: var(--muted);
+  line-height: 1.4;
+}
+.s-problem.active .s-prob-label { animation: fadeIn .5s ease .1s forwards; }
+.s-problem.active .s-prob-title { animation: slideUp .8s ease .3s forwards; }
+.s-problem.active .s-prob-stat:nth-child(1) { animation: slideUp .6s ease .8s forwards; }
+.s-problem.active .s-prob-stat:nth-child(2) { animation: slideUp .6s ease 1.0s forwards; }
+.s-problem.active .s-prob-stat:nth-child(3) { animation: slideUp .6s ease 1.2s forwards; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 3 — SOLUTION (3 steps)
+═══════════════════════════════════════════════════════════════════════ */
+.s-solution { background: var(--black); }
+.s-solution .scene-content { max-width: 1100px; }
+.s-sol-title {
+  font-size: 3rem; font-weight: 800; line-height: 1.1;
+  text-align: center; margin-bottom: 1rem;
+  letter-spacing: -.02em;
+  opacity: 0;
+}
+.s-sol-title em { color: var(--gold); font-style: normal; }
+.s-sol-sub {
+  font-size: 1.15rem; color: var(--muted);
+  text-align: center; margin-bottom: 3rem;
+  opacity: 0;
+}
+.s-sol-steps {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem; align-items: stretch;
+  position: relative;
+}
+.s-sol-step {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px; padding: 1.75rem 1.4rem;
+  text-align: center;
+  position: relative;
+  opacity: 0; transform: translateY(20px);
+}
+.s-sol-icon {
+  width: 64px; height: 64px;
+  margin: 0 auto 1rem;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-dim);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+}
+.s-sol-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem;
+  color: var(--gold);
+  letter-spacing: .15em;
+  margin-bottom: .5rem;
+}
+.s-sol-name {
+  font-size: 1.3rem; font-weight: 700;
+  color: var(--text);
+  margin-bottom: .5rem;
+  letter-spacing: -.01em;
+}
+.s-sol-desc {
+  font-size: .9rem; color: var(--muted);
+  line-height: 1.5;
+}
+.s-sol-arrow {
+  position: absolute; top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.6rem; color: var(--gold-dim);
+  z-index: 2; pointer-events: none;
+}
+.s-sol-arrow.a1 { left: calc(33.33% - 16px); }
+.s-sol-arrow.a2 { left: calc(66.66% - 16px); }
+.s-solution.active .s-sol-title { animation: slideUp .8s ease .1s forwards; }
+.s-solution.active .s-sol-sub { animation: fadeIn .6s ease .5s forwards; }
+.s-solution.active .s-sol-step:nth-child(1) { animation: slideUp .6s ease .8s forwards; }
+.s-solution.active .s-sol-step:nth-child(2) { animation: slideUp .6s ease 1.1s forwards; }
+.s-solution.active .s-sol-step:nth-child(3) { animation: slideUp .6s ease 1.4s forwards; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 4 — POOLS
+═══════════════════════════════════════════════════════════════════════ */
+.s-pools { background: var(--black); }
+.s-pools .scene-content { max-width: 1100px; }
+.s-pools-title {
+  font-size: 2.8rem; font-weight: 800; line-height: 1.1;
+  text-align: center; margin-bottom: .8rem; letter-spacing: -.02em;
+  opacity: 0;
+}
+.s-pools-title em { color: var(--gold); font-style: normal; }
+.s-pools-sub {
+  font-size: 1.1rem; color: var(--muted);
+  text-align: center; margin-bottom: 2.5rem;
+  opacity: 0;
+}
+.s-pools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.s-pool-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 1.75rem;
+  opacity: 0; transform: translateY(20px);
+  position: relative;
+}
+.s-pool-card.green-accent { border-color: rgba(76,175,125,.35); }
+.s-pool-card.gold-accent { border-color: rgba(212,168,67,.35); }
+.s-pool-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 1rem;
+}
+.s-pool-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+}
+.gold-accent .s-pool-icon { background: var(--gold-bg); border: 1px solid var(--gold-dim); }
+.green-accent .s-pool-icon { background: var(--green-bg); border: 1px solid var(--green3); }
+.s-pool-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem; padding: .25rem .65rem;
+  border-radius: 100px;
+  background: rgba(76,175,125,.15);
+  color: var(--green3);
+  border: 1px solid rgba(76,175,125,.3);
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.s-pool-name {
+  font-size: 1.4rem; font-weight: 700;
+  margin-bottom: .25rem; letter-spacing: -.01em;
+}
+.s-pool-loc {
+  font-size: .8rem; color: var(--muted);
+  margin-bottom: 1.4rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+.s-pool-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem; padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.s-pool-stat-lbl {
+  font-size: .65rem; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: .3rem;
+}
+.s-pool-stat-val {
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--text); letter-spacing: -.02em;
+}
+.gold-accent .s-pool-stat-val.apy { color: var(--gold); }
+.green-accent .s-pool-stat-val.apy { color: var(--green3); }
+.s-pools.active .s-pools-title { animation: slideUp .8s ease .1s forwards; }
+.s-pools.active .s-pools-sub { animation: fadeIn .6s ease .5s forwards; }
+.s-pools.active .s-pool-card:nth-child(1) { animation: slideUp .6s ease .8s forwards; }
+.s-pools.active .s-pool-card:nth-child(2) { animation: slideUp .6s ease 1.1s forwards; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 5 — CALCULATOR
+═══════════════════════════════════════════════════════════════════════ */
+.s-calc { background: var(--black); }
+.s-calc .scene-content { max-width: 920px; }
+.s-calc-title {
+  font-size: 2.6rem; font-weight: 800;
+  text-align: center; margin-bottom: 2rem;
+  letter-spacing: -.02em;
+  opacity: 0;
+}
+.s-calc-title em { color: var(--gold); font-style: normal; }
+.s-calc-box {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 2rem;
+  opacity: 0; transform: scale(.95);
+}
+.s-calc.active .s-calc-title { animation: slideUp .6s ease .1s forwards; }
+.s-calc.active .s-calc-box { animation: scaleIn .7s ease .5s forwards; }
+@keyframes scaleIn { to { opacity: 1; transform: scale(1); } }
+
+.s-calc-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem; margin-bottom: 1.5rem;
+}
+.s-calc-field {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .85rem 1rem;
+}
+.s-calc-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .65rem; color: var(--muted2);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: .3rem;
+}
+.s-calc-val {
+  font-size: 1.1rem; color: var(--text);
+  font-weight: 600;
+}
+.s-calc-val.typing {
+  display: inline-block;
+  border-right: 2px solid var(--gold);
+  animation: caret 1s steps(1) infinite;
+}
+@keyframes caret { 50% { border-color: transparent; } }
+
+.s-calc-boost {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .9rem 1rem;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-dim);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: .95rem; color: var(--text);
+}
+.s-calc-toggle {
+  width: 36px; height: 20px;
+  background: var(--gold);
+  border-radius: 100px; position: relative; flex-shrink: 0;
+}
+.s-calc-toggle::after {
+  content: ''; position: absolute;
+  width: 14px; height: 14px;
+  background: var(--black);
+  border-radius: 50%; top: 3px; right: 3px;
+  transition: all .3s;
+}
+.s-calc-boost.off .s-calc-toggle {
+  background: var(--card2); border: 1px solid var(--border);
+}
+.s-calc-boost.off .s-calc-toggle::after {
+  background: var(--muted); left: 3px; right: auto;
+}
+
+.s-calc-results {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+.s-calc-result {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-align: center;
+}
+.s-calc-result.highlight {
+  border-color: var(--gold);
+  background: var(--gold-bg);
+}
+.s-calc-rl {
+  font-size: .7rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: .4rem;
+}
+.s-calc-rv {
+  font-size: 2rem; font-weight: 800;
+  color: var(--green3);
+  letter-spacing: -.02em;
+  font-family: 'Sora', sans-serif;
+}
+.s-calc-result.highlight .s-calc-rv { color: var(--gold); }
+.s-calc-rs {
+  font-size: .7rem; color: var(--muted2);
+  margin-top: .3rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 6 — DASHBOARD
+═══════════════════════════════════════════════════════════════════════ */
+.s-dash { background: var(--black); }
+.s-dash .scene-content { max-width: 1150px; }
+.s-dash-title {
+  font-size: 2.4rem; font-weight: 800;
+  text-align: center; margin-bottom: 1.8rem;
+  letter-spacing: -.02em;
+  opacity: 0;
+}
+.s-dash-title em { color: var(--gold); font-style: normal; }
+.s-dash-box {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  opacity: 0;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.2rem;
+}
+.s-dash.active .s-dash-title { animation: slideUp .6s ease .1s forwards; }
+.s-dash.active .s-dash-box { animation: fadeIn .8s ease .5s forwards; }
+
+.s-dash-sidebar {
+  background: var(--card2);
+  border-radius: 12px;
+  padding: 1rem .75rem;
+}
+.s-dash-nav-item {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .6rem .75rem;
+  border-radius: 8px;
+  font-size: .85rem;
+  color: var(--muted);
+  margin-bottom: .25rem;
+}
+.s-dash-nav-item.active {
+  background: var(--gold-bg);
+  color: var(--gold);
+  font-weight: 600;
+}
+.s-dash-nav-item .ico { font-size: 1rem; }
+
+.s-dash-main { display: flex; flex-direction: column; gap: 1rem; }
+.s-dash-kpis {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: .75rem;
+}
+.s-dash-kpi {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .85rem 1rem;
+}
+.s-dash-kpi-l {
+  font-size: .65rem; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: .35rem;
+}
+.s-dash-kpi-v {
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--text); letter-spacing: -.02em;
+}
+.s-dash-kpi-v.gold  { color: var(--gold); }
+.s-dash-kpi-v.green { color: var(--green3); }
+
+.s-dash-positions {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+.s-dash-pos-title {
+  font-size: .75rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: .8rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+.s-dash-pos-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .65rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .9rem;
+}
+.s-dash-pos-row:last-child { border-bottom: none; }
+.s-dash-pos-left { display: flex; align-items: center; gap: .65rem; }
+.s-dash-pos-icon { font-size: 1.1rem; }
+.s-dash-pos-amt { color: var(--green3); font-weight: 600; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 7 — TOKEN $UAAGRO
+═══════════════════════════════════════════════════════════════════════ */
+.s-token { background: var(--black); }
+.s-token .scene-content { max-width: 1080px; }
+.s-token-title {
+  font-size: 3rem; font-weight: 800; line-height: 1.1;
+  text-align: center; margin-bottom: 1rem; letter-spacing: -.02em;
+  opacity: 0;
+}
+.s-token-title em { color: var(--gold); font-style: normal; }
+.s-token-sub {
+  font-size: 1.15rem; color: var(--muted);
+  text-align: center; margin-bottom: 2.5rem;
+  opacity: 0;
+}
+.s-token-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.s-token-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 1.75rem 1.4rem;
+  text-align: center;
+  opacity: 0; transform: translateY(20px);
+}
+.s-token-icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 14px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+}
+.s-token-name {
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--gold);
+  margin-bottom: .5rem;
+  letter-spacing: -.01em;
+}
+.s-token-desc {
+  font-size: .88rem; color: var(--muted);
+  line-height: 1.55;
+}
+.s-token-num {
+  font-size: 2.2rem; font-weight: 800;
+  color: var(--text); letter-spacing: -.03em;
+  margin-bottom: .25rem; line-height: 1;
+}
+.s-token.active .s-token-title { animation: slideUp .8s ease .1s forwards; }
+.s-token.active .s-token-sub { animation: fadeIn .6s ease .5s forwards; }
+.s-token.active .s-token-card:nth-child(1) { animation: slideUp .6s ease .8s forwards; }
+.s-token.active .s-token-card:nth-child(2) { animation: slideUp .6s ease 1.1s forwards; }
+.s-token.active .s-token-card:nth-child(3) { animation: slideUp .6s ease 1.4s forwards; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCENE 8 — CTA
+═══════════════════════════════════════════════════════════════════════ */
+.s-cta {
+  background:
+    radial-gradient(ellipse 60% 80% at center, rgba(212,168,67,.08) 0%, transparent 70%),
+    var(--black);
+}
+.s-cta-inner {
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
+}
+.s-cta-logo {
+  width: 90px; height: 90px;
+  opacity: 0; transform: scale(.7);
+  filter: drop-shadow(0 8px 32px rgba(212,168,67,.3));
+}
+.s-cta.active .s-cta-logo {
+  animation: logoIn .9s cubic-bezier(.2,.9,.3,1.2) .2s forwards;
+}
+.s-cta-tagline {
+  font-size: 4rem; font-weight: 800; line-height: 1.05;
+  letter-spacing: -.03em;
+  opacity: 0;
+}
+.s-cta-tagline span {
+  display: block;
+  background: linear-gradient(135deg, var(--text), var(--gold));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.s-cta.active .s-cta-tagline {
+  animation: slideUp 1s cubic-bezier(.2,.9,.3,1) .9s forwards;
+}
+.s-cta-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem; font-weight: 600;
+  color: var(--gold);
+  margin-top: 1rem;
+  letter-spacing: .02em;
+  opacity: 0;
+  padding: .75rem 2rem;
+  border: 1.5px solid var(--gold);
+  border-radius: 100px;
+  background: var(--gold-bg);
+}
+.s-cta.active .s-cta-url {
+  animation: fadeIn .8s ease 1.7s forwards;
+}
+.s-cta-meta {
+  font-size: .9rem; color: var(--muted);
+  letter-spacing: .15em; text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0;
+  margin-top: .8rem;
+}
+.s-cta.active .s-cta-meta {
+  animation: fadeIn .6s ease 2.3s forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SUBTITLES (bottom captions)
+═══════════════════════════════════════════════════════════════════════ */
+.subtitle-wrap {
+  position: absolute;
+  bottom: 70px; left: 0; right: 0;
+  display: flex; justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+  padding: 0 2rem;
+}
+.subtitle {
+  background: rgba(0, 0, 0, .82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 600;
+  padding: .65rem 1.4rem;
+  border-radius: 8px;
+  max-width: 80%; text-align: center;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .25s, transform .25s;
+  letter-spacing: .005em;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  border: 1px solid rgba(255,255,255,.08);
+}
+.subtitle.show {
+  opacity: 1; transform: translateY(0);
+}
+.subtitle .hl { color: var(--gold); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CONTROLS (progress, play/pause)
+═══════════════════════════════════════════════════════════════════════ */
+.controls {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.85), transparent);
+  padding: 1rem 1.5rem .85rem;
+  display: flex; align-items: center; gap: 1rem;
+  z-index: 20;
+}
+
+.progress-track {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,.15);
+  border-radius: 100px;
+  cursor: pointer;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 100%);
+  border-radius: 100px;
+  width: 0%;
+  transition: width .1s linear;
+  position: relative;
+}
+.progress-fill::after {
+  content: '';
+  position: absolute; right: -6px; top: 50%;
+  transform: translateY(-50%);
+  width: 12px; height: 12px;
+  background: var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--gold);
+}
+
+.ctrl-btn {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  font-size: 1rem;
+}
+.ctrl-btn:hover {
+  background: var(--gold-bg);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.ctrl-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .85rem;
+  color: var(--text);
+  letter-spacing: .05em;
+  min-width: 70px;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   START SCREEN (before play)
+═══════════════════════════════════════════════════════════════════════ */
+.start-overlay {
+  position: absolute; inset: 0;
+  background: rgba(10,9,6,.94);
+  backdrop-filter: blur(10px);
+  z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity .4s;
+}
+.start-overlay.hide { opacity: 0; pointer-events: none; }
+.start-logo { width: 100px; height: 100px; filter: drop-shadow(0 8px 32px rgba(212,168,67,.3)); }
+.start-title { font-size: 2.4rem; font-weight: 800; color: var(--text); letter-spacing: -.02em; }
+.start-title em { color: var(--gold); font-style: normal; }
+.start-sub { font-size: 1rem; color: var(--muted); max-width: 480px; line-height: 1.5; padding: 0 2rem; }
+.start-play {
+  width: 90px; height: 90px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--black);
+  margin: .5rem auto 0;
+  box-shadow: 0 10px 40px rgba(212,168,67,.4), 0 0 0 0 rgba(212,168,67,.4);
+  transition: transform .2s;
+  animation: pulsePlay 2s infinite;
+}
+.start-play:hover { transform: scale(1.08); }
+@keyframes pulsePlay {
+  0%, 100% { box-shadow: 0 10px 40px rgba(212,168,67,.4), 0 0 0 0 rgba(212,168,67,.5); }
+  50%      { box-shadow: 0 10px 40px rgba(212,168,67,.4), 0 0 0 20px rgba(212,168,67,0); }
+}
+.start-play svg { margin-left: 5px; }
+.start-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem; color: var(--muted2);
+  letter-spacing: .15em; text-transform: uppercase;
+}
+.start-actions {
+  display: flex; gap: .75rem;
+  margin-top: 1rem;
+}
+.start-link {
+  font-size: .82rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: .55rem 1.1rem;
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  transition: all .2s;
+}
+.start-link:hover { border-color: var(--gold); color: var(--gold); }
+
+/* End screen (replay) */
+.end-overlay {
+  position: absolute; inset: 0;
+  background: rgba(10,9,6,.7);
+  backdrop-filter: blur(8px);
+  z-index: 40;
+  display: none;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 1rem;
+}
+.end-overlay.show { display: flex; }
+.end-actions { display: flex; gap: 1rem; margin-top: .5rem; }
+.end-btn {
+  padding: .85rem 1.6rem;
+  background: var(--gold);
+  color: var(--black);
+  border: none;
+  border-radius: 100px;
+  font-size: .95rem; font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform .15s;
+}
+.end-btn:hover { transform: translateY(-2px); }
+.end-btn.outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE — scale subtitles & UI on small screens
+═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .subtitle { font-size: 1rem; padding: .5rem 1rem; }
+  .subtitle-wrap { bottom: 60px; }
+  .s-open-wordmark { font-size: 3rem; }
+  .s-open-tagline  { font-size: 1rem; padding: 0 1rem; }
+  .s-prob-title, .s-sol-title, .s-pools-title, .s-calc-title, .s-token-title, .s-dash-title { font-size: 2rem; }
+  .s-prob-num, .s-token-num { font-size: 2rem; }
+  .s-calc-rv { font-size: 1.5rem; }
+  .s-cta-tagline { font-size: 2.4rem; }
+  .s-cta-url { font-size: 1rem; }
+  .s-dash-box { grid-template-columns: 1fr; }
+  .s-dash-sidebar { display: none; }
+  .s-dash-kpis { grid-template-columns: 1fr 1fr; }
+  .s-calc-row, .s-calc-results { grid-template-columns: 1fr; }
+  .s-token-grid, .s-pools-grid, .s-prob-stats, .s-sol-steps { grid-template-columns: 1fr; gap: .75rem; }
+  .s-sol-arrow { display: none; }
+  .start-title { font-size: 1.6rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <!-- ═════════════════ SCENES ═════════════════ -->
+
+    <!-- SCENE 1: OPEN -->
+    <div class="scene s-open" data-scene="1">
+      <div class="scene-content s-open-inner">
+        <img src="/logo.png" alt="ZernoFi" class="s-open-logo">
+        <h1 class="s-open-wordmark">ZERNOFI</h1>
+        <p class="s-open-tagline">The first RWA aggregator bringing Ukrainian agribusiness to Solana</p>
+        <div class="s-open-badge">● Built on Solana · Real Yield in USDC</div>
+      </div>
+    </div>
+
+    <!-- SCENE 2: PROBLEM -->
+    <div class="scene s-problem" data-scene="2">
+      <div class="scene-content">
+        <div class="s-prob-label">The Problem</div>
+        <h2 class="s-prob-title">Two markets,<br><em>both broken.</em></h2>
+        <div class="s-prob-stats">
+          <div class="s-prob-stat">
+            <div class="s-prob-num">$160B</div>
+            <div class="s-prob-lbl">Global agri-financing gap per year (World Bank, FAO)</div>
+          </div>
+          <div class="s-prob-stat">
+            <div class="s-prob-num">30-90</div>
+            <div class="s-prob-lbl">Days farmers wait for bank capital while seasons don't wait</div>
+          </div>
+          <div class="s-prob-stat">
+            <div class="s-prob-num">0%</div>
+            <div class="s-prob-lbl">Stable, real-asset-backed yield for the average crypto investor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 3: SOLUTION -->
+    <div class="scene s-solution" data-scene="3">
+      <div class="scene-content">
+        <h2 class="s-sol-title">Three steps. <em>One outcome.</em></h2>
+        <p class="s-sol-sub">USDC in. USDC out. Real crops in between.</p>
+        <div class="s-sol-steps">
+          <div class="s-sol-step">
+            <div class="s-sol-icon">💵</div>
+            <div class="s-sol-num">STEP 01</div>
+            <div class="s-sol-name">Deposit USDC</div>
+            <div class="s-sol-desc">Choose a verified farm pool. Supply USDC from $100 in seconds via Solana.</div>
+          </div>
+          <div class="s-sol-arrow a1">→</div>
+          <div class="s-sol-step">
+            <div class="s-sol-icon">🌾</div>
+            <div class="s-sol-num">STEP 02</div>
+            <div class="s-sol-name">Real Farms Grow</div>
+            <div class="s-sol-desc">Capital funds wheat &amp; snail production. Verified by Pyth oracles and on-chain audits.</div>
+          </div>
+          <div class="s-sol-arrow a2">→</div>
+          <div class="s-sol-step">
+            <div class="s-sol-icon">🪙</div>
+            <div class="s-sol-num">STEP 03</div>
+            <div class="s-sol-name">Earn USDC + $UAAGRO</div>
+            <div class="s-sol-desc">After harvest, dividends pay out in USDC. Plus, you farm $UAAGRO tokens passively.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 4: POOLS -->
+    <div class="scene s-pools" data-scene="4">
+      <div class="scene-content">
+        <h2 class="s-pools-title">Two live pools. <em>Real partners.</em></h2>
+        <p class="s-pools-sub">Pre-vetted Ukrainian farms with confirmed off-take agreements</p>
+        <div class="s-pools-grid">
+          <div class="s-pool-card gold-accent">
+            <div class="s-pool-head">
+              <div class="s-pool-icon">🌾</div>
+              <div class="s-pool-tag">● Active</div>
+            </div>
+            <div class="s-pool-name">Premium Winter Wheat</div>
+            <div class="s-pool-loc">Kyiv Region, Ukraine · 9-month term</div>
+            <div class="s-pool-stats">
+              <div>
+                <div class="s-pool-stat-lbl">Target APY</div>
+                <div class="s-pool-stat-val apy">18.5%</div>
+              </div>
+              <div>
+                <div class="s-pool-stat-lbl">Min Entry</div>
+                <div class="s-pool-stat-val">$100</div>
+              </div>
+              <div>
+                <div class="s-pool-stat-lbl">Pool Cap</div>
+                <div class="s-pool-stat-val">$2.0M</div>
+              </div>
+            </div>
+          </div>
+          <div class="s-pool-card green-accent">
+            <div class="s-pool-head">
+              <div class="s-pool-icon">🐌</div>
+              <div class="s-pool-tag">● Active</div>
+            </div>
+            <div class="s-pool-name">Escargot Farm Expansion</div>
+            <div class="s-pool-loc">Lviv Region · EU export grade · 12-month</div>
+            <div class="s-pool-stats">
+              <div>
+                <div class="s-pool-stat-lbl">Target APY</div>
+                <div class="s-pool-stat-val apy">24.0%</div>
+              </div>
+              <div>
+                <div class="s-pool-stat-lbl">Min Entry</div>
+                <div class="s-pool-stat-val">$100</div>
+              </div>
+              <div>
+                <div class="s-pool-stat-lbl">Pool Cap</div>
+                <div class="s-pool-stat-val">$800K</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 5: CALCULATOR -->
+    <div class="scene s-calc" data-scene="5">
+      <div class="scene-content">
+        <h2 class="s-calc-title">$10,000 → <em id="calcResult">+$2,150</em> in a year</h2>
+        <div class="s-calc-box">
+          <div class="s-calc-row">
+            <div class="s-calc-field">
+              <div class="s-calc-lbl">Investment</div>
+              <div class="s-calc-val" id="calcAmt">$10,000</div>
+            </div>
+            <div class="s-calc-field">
+              <div class="s-calc-lbl">Pool</div>
+              <div class="s-calc-val">🌾 Wheat 18.5%</div>
+            </div>
+            <div class="s-calc-field">
+              <div class="s-calc-lbl">Duration</div>
+              <div class="s-calc-val">12 months</div>
+            </div>
+          </div>
+          <div class="s-calc-boost" id="calcBoostRow">
+            <div class="s-calc-toggle"></div>
+            <span>Yield Boost via <strong style="color:var(--gold)">$UAAGRO</strong> staking <strong style="color:var(--gold)">(+3% APY)</strong></span>
+          </div>
+          <div class="s-calc-results">
+            <div class="s-calc-result">
+              <div class="s-calc-rl">Base Yield</div>
+              <div class="s-calc-rv">+$1,850</div>
+              <div class="s-calc-rs">USDC dividends</div>
+            </div>
+            <div class="s-calc-result highlight">
+              <div class="s-calc-rl">Boosted Yield</div>
+              <div class="s-calc-rv" id="calcBoostVal">+$2,150</div>
+              <div class="s-calc-rs">+3% from $UAAGRO</div>
+            </div>
+            <div class="s-calc-result">
+              <div class="s-calc-rl">Total Balance</div>
+              <div class="s-calc-rv" style="color:var(--text)">$12,150</div>
+              <div class="s-calc-rs">principal + yield</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 6: DASHBOARD -->
+    <div class="scene s-dash" data-scene="6">
+      <div class="scene-content">
+        <h2 class="s-dash-title">Track everything <em>in one dashboard</em></h2>
+        <div class="s-dash-box">
+          <div class="s-dash-sidebar">
+            <div class="s-dash-nav-item active"><span class="ico">📊</span>Portfolio</div>
+            <div class="s-dash-nav-item"><span class="ico">🌾</span>My Pools</div>
+            <div class="s-dash-nav-item"><span class="ico">🪙</span>$UAAGRO</div>
+            <div class="s-dash-nav-item"><span class="ico">🔍</span>Explore</div>
+            <div class="s-dash-nav-item"><span class="ico">📜</span>Transactions</div>
+          </div>
+          <div class="s-dash-main">
+            <div class="s-dash-kpis">
+              <div class="s-dash-kpi">
+                <div class="s-dash-kpi-l">Portfolio Value</div>
+                <div class="s-dash-kpi-v gold">$2,448</div>
+              </div>
+              <div class="s-dash-kpi">
+                <div class="s-dash-kpi-l">Active Pools</div>
+                <div class="s-dash-kpi-v">2</div>
+              </div>
+              <div class="s-dash-kpi">
+                <div class="s-dash-kpi-l">$UAAGRO Earned</div>
+                <div class="s-dash-kpi-v gold">1,240</div>
+              </div>
+              <div class="s-dash-kpi">
+                <div class="s-dash-kpi-l">Yield Accrued</div>
+                <div class="s-dash-kpi-v green">+$48</div>
+              </div>
+            </div>
+            <div class="s-dash-positions">
+              <div class="s-dash-pos-title">Active Positions</div>
+              <div class="s-dash-pos-row">
+                <div class="s-dash-pos-left">
+                  <span class="s-dash-pos-icon">🌾</span>
+                  <div>
+                    <div style="font-weight:600">Premium Winter Wheat</div>
+                    <div style="font-size:.7rem; color:var(--muted2)">80% to harvest · 18.5% APY</div>
+                  </div>
+                </div>
+                <div class="s-dash-pos-amt">$1,500 → +$182</div>
+              </div>
+              <div class="s-dash-pos-row">
+                <div class="s-dash-pos-left">
+                  <span class="s-dash-pos-icon">🐌</span>
+                  <div>
+                    <div style="font-weight:600">Escargot Farm Expansion</div>
+                    <div style="font-size:.7rem; color:var(--muted2)">42% to harvest · 24.0% APY</div>
+                  </div>
+                </div>
+                <div class="s-dash-pos-amt">$900 → +$108</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 7: TOKEN -->
+    <div class="scene s-token" data-scene="7">
+      <div class="scene-content">
+        <h2 class="s-token-title"><em>$UAAGRO</em> — your edge</h2>
+        <p class="s-token-sub">Not required to earn yield. Required to maximize it.</p>
+        <div class="s-token-grid">
+          <div class="s-token-card">
+            <div class="s-token-icon">⚡</div>
+            <div class="s-token-num">+3%</div>
+            <div class="s-token-name">Yield Boost</div>
+            <div class="s-token-desc">Stake $UAAGRO to lift your pool APY. 18.5% becomes 21.5%.</div>
+          </div>
+          <div class="s-token-card">
+            <div class="s-token-icon">🔑</div>
+            <div class="s-token-num">48h</div>
+            <div class="s-token-name">Early Access</div>
+            <div class="s-token-desc">Priority allocation on exotic, high-margin farm pools before public release.</div>
+          </div>
+          <div class="s-token-card">
+            <div class="s-token-icon">💎</div>
+            <div class="s-token-num">DEX</div>
+            <div class="s-token-name">Liquidity</div>
+            <div class="s-token-desc">Trade on Jupiter and Raydium. Exit before harvest if you need to.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 8: CTA -->
+    <div class="scene s-cta" data-scene="8">
+      <div class="scene-content s-cta-inner">
+        <img src="/logo.png" alt="ZernoFi" class="s-cta-logo">
+        <h2 class="s-cta-tagline">
+          Real Crops.<br>
+          Real Yield.<br>
+          <span>Zero Volatility.</span>
+        </h2>
+        <a href="/" class="s-cta-url">www.zernofi.org</a>
+        <div class="s-cta-meta">Built for Solana Global Hackathon · RWA Track</div>
+      </div>
+    </div>
+
+    <!-- ═════════════════ SUBTITLES ═════════════════ -->
+    <div class="subtitle-wrap">
+      <div class="subtitle" id="subtitle"></div>
+    </div>
+
+    <!-- ═════════════════ CONTROLS ═════════════════ -->
+    <div class="controls">
+      <button class="ctrl-btn" id="playBtn" aria-label="Play/Pause">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playIcon">
+          <path d="M6 4h4v16H6zM14 4h4v16h-4z"/>
+        </svg>
+      </button>
+      <div class="progress-track" id="progressTrack">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="ctrl-time" id="time">0:00 / 1:30</div>
+    </div>
+
+    <!-- ═════════════════ START OVERLAY ═════════════════ -->
+    <div class="start-overlay" id="startOverlay">
+      <img src="/logo.png" alt="ZernoFi" class="start-logo">
+      <div class="start-title">A 90-second tour of <em>ZernoFi</em></div>
+      <div class="start-sub">Real Yield from Ukrainian Agribusiness on Solana. RWA pools, $UAAGRO token, investor dashboard — all in 90 seconds.</div>
+      <div class="start-play" aria-label="Start demo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+      <div class="start-hint">Click anywhere to begin</div>
+      <div class="start-actions">
+        <a href="/" class="start-link">← Back to ZernoFi</a>
+        <a href="/whitepaper.pdf" target="_blank" class="start-link">📄 Whitepaper</a>
+      </div>
+    </div>
+
+    <!-- ═════════════════ END OVERLAY ═════════════════ -->
+    <div class="end-overlay" id="endOverlay">
+      <div style="text-align:center;">
+        <div style="font-size:1.8rem; font-weight:800; color:var(--gold); margin-bottom:.5rem;">That's ZernoFi.</div>
+        <div style="font-size:1rem; color:var(--muted); margin-bottom:1.5rem;">Ready to start earning real yield?</div>
+        <div class="end-actions">
+          <button class="end-btn" onclick="window.location.href='/'">Visit Site</button>
+          <button class="end-btn outline" onclick="replay()">↻ Replay</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   90-SECOND DEMO ENGINE
+═══════════════════════════════════════════════════════════════════════ */
+
+// Scene timing (start times in seconds; end time = next scene's start)
+const TIMELINE = [
+  { scene: 1, start: 0,  end: 9 },   // OPEN
+  { scene: 2, start: 9,  end: 20 },  // PROBLEM
+  { scene: 3, start: 20, end: 33 },  // SOLUTION
+  { scene: 4, start: 33, end: 45 },  // POOLS
+  { scene: 5, start: 45, end: 58 },  // CALCULATOR
+  { scene: 6, start: 58, end: 70 },  // DASHBOARD
+  { scene: 7, start: 70, end: 82 },  // TOKEN
+  { scene: 8, start: 82, end: 90 },  // CTA
+];
+const TOTAL = 90;
+
+// Subtitles: array of { time, end, text }
+// All ranges within total = 90s
+const SUBS = [
+  // SCENE 1 (0-9)
+  { t: 0.5,  end: 4.0, text: 'Meet <span class="hl">ZernoFi</span> — the first RWA aggregator for Ukrainian agribusiness…' },
+  { t: 4.0,  end: 9.0, text: 'Built on <span class="hl">Solana</span>. Yield paid in <span class="hl">USDC</span>. No token volatility.' },
+  // SCENE 2 (9-20)
+  { t: 9.5,  end: 14.0, text: 'The world\'s farmers face a <span class="hl">$160 billion</span> annual financing gap.' },
+  { t: 14.0, end: 20.0, text: 'Banks take months. Crypto offers no real-asset yield. Both markets are broken.' },
+  // SCENE 3 (20-33)
+  { t: 20.5, end: 25.0, text: '<span class="hl">ZernoFi</span> fixes both with three simple steps.' },
+  { t: 25.0, end: 29.5, text: 'Deposit <span class="hl">USDC</span> into a verified farm pool from just <span class="hl">$100</span>.' },
+  { t: 29.5, end: 33.0, text: 'Crops grow. You earn USDC <em>plus</em> $UAAGRO tokens.' },
+  // SCENE 4 (33-45)
+  { t: 33.5, end: 38.5, text: 'Two live pools with pre-vetted Ukrainian partners.' },
+  { t: 38.5, end: 42.5, text: '<span class="hl">Premium Wheat</span> at <span class="hl">18.5%</span> APY.' },
+  { t: 42.5, end: 45.0, text: '<span class="hl">Escargot Farm</span> at <span class="hl">24%</span> APY — EU export grade.' },
+  // SCENE 5 (45-58)
+  { t: 45.5, end: 50.0, text: 'Calculate your returns in seconds.' },
+  { t: 50.0, end: 54.0, text: '<span class="hl">$10,000</span> in Wheat = <span class="hl">+$1,850</span> base yield.' },
+  { t: 54.0, end: 58.0, text: 'With $UAAGRO boost: <span class="hl">+$2,150</span>. A clear 16% bonus.' },
+  // SCENE 6 (58-70)
+  { t: 58.5, end: 63.0, text: 'Every position, every payout, every reward — tracked live.' },
+  { t: 63.0, end: 70.0, text: 'Portfolio value, $UAAGRO balance, pool progress — all in one dashboard.' },
+  // SCENE 7 (70-82)
+  { t: 70.5, end: 75.0, text: '<span class="hl">$UAAGRO</span> is optional. But it\'s your edge.' },
+  { t: 75.0, end: 78.5, text: 'Stake for <span class="hl">+3% APY boost</span>. Vote on governance.' },
+  { t: 78.5, end: 82.0, text: 'Sell on Jupiter anytime — secondary liquidity for an illiquid asset.' },
+  // SCENE 8 (82-90)
+  { t: 82.5, end: 86.0, text: 'This is the bridge between real farms and real DeFi.' },
+  { t: 86.0, end: 90.0, text: 'Visit <span class="hl">www.zernofi.org</span>. Start with $100.' },
+];
+
+// ─── ENGINE STATE ────────────────────────────────────────
+let currentTime = 0;
+let isPlaying = false;
+let lastTick = null;
+let currentScene = 0;
+let currentSubIdx = -1;
+let rafId = null;
+
+const stage = document.getElementById('stage');
+const scenes = document.querySelectorAll('.scene');
+const subtitleEl = document.getElementById('subtitle');
+const progressFill = document.getElementById('progressFill');
+const progressTrack = document.getElementById('progressTrack');
+const playBtn = document.getElementById('playBtn');
+const playIcon = document.getElementById('playIcon');
+const timeEl = document.getElementById('time');
+const startOverlay = document.getElementById('startOverlay');
+const endOverlay = document.getElementById('endOverlay');
+
+// SVG paths for play/pause icons
+const ICON_PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+const ICON_PLAY  = '<path d="M8 5v14l11-7z"/>';
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60).toString().padStart(2, '0');
+  return `${m}:${sec}`;
+}
+
+function updateScene(time) {
+  // Find which scene we're in
+  let targetScene = TIMELINE.length;
+  for (let i = 0; i < TIMELINE.length; i++) {
+    if (time >= TIMELINE[i].start && time < TIMELINE[i].end) {
+      targetScene = TIMELINE[i].scene;
+      break;
+    }
+  }
+  // If past everything, stay on last scene
+  if (time >= TOTAL) targetScene = 8;
+
+  if (targetScene !== currentScene) {
+    currentScene = targetScene;
+    scenes.forEach(el => {
+      const n = parseInt(el.dataset.scene, 10);
+      el.classList.toggle('active', n === currentScene);
+    });
+  }
+}
+
+function updateSubtitle(time) {
+  // Find active subtitle
+  let active = -1;
+  for (let i = 0; i < SUBS.length; i++) {
+    if (time >= SUBS[i].t && time < SUBS[i].end) {
+      active = i; break;
+    }
+  }
+  if (active !== currentSubIdx) {
+    currentSubIdx = active;
+    if (active === -1) {
+      subtitleEl.classList.remove('show');
+    } else {
+      subtitleEl.innerHTML = SUBS[active].text;
+      subtitleEl.classList.add('show');
+    }
+  }
+}
+
+// Animate calculator counter in scene 5
+function updateCalcCounter(time) {
+  const sceneStart = 45;
+  const localT = time - sceneStart;
+  if (localT < 0.5 || localT > 13) return;
+  const calcAmt   = document.getElementById('calcAmt');
+  const calcRes   = document.getElementById('calcResult');
+  const calcBoost = document.getElementById('calcBoostVal');
+  if (!calcAmt) return;
+
+  // 0.5s - 4.5s: amount types in
+  if (localT < 4.5) {
+    const p = Math.min(1, (localT - 0.5) / 4);
+    const v = Math.round(p * 10000);
+    calcAmt.textContent = '$' + v.toLocaleString('en');
+  } else {
+    calcAmt.textContent = '$10,000';
+  }
+  // 5s - 9s: yield counter +0 → +$1,850
+  if (localT >= 5 && localT < 9) {
+    const p = (localT - 5) / 4;
+    const v = Math.round(p * 1850);
+    calcRes.innerHTML = '+$' + v.toLocaleString('en');
+    calcBoost.textContent = '+$' + v.toLocaleString('en');
+  } else if (localT >= 9) {
+    // 9s+: boost kicks in, jump to +$2,150 with highlight
+    calcRes.innerHTML = '+$2,150';
+    calcBoost.textContent = '+$2,150';
+  }
+}
+
+function tick(now) {
+  if (!isPlaying) return;
+  if (!lastTick) lastTick = now;
+  const dt = (now - lastTick) / 1000;
+  lastTick = now;
+  currentTime += dt;
+
+  if (currentTime >= TOTAL) {
+    currentTime = TOTAL;
+    pause();
+    showEndScreen();
+  }
+
+  render();
+  rafId = requestAnimationFrame(tick);
+}
+
+function render() {
+  updateScene(currentTime);
+  updateSubtitle(currentTime);
+  updateCalcCounter(currentTime);
+  const pct = Math.min(100, (currentTime / TOTAL) * 100);
+  progressFill.style.width = pct + '%';
+  timeEl.textContent = fmtTime(currentTime) + ' / ' + fmtTime(TOTAL);
+}
+
+function play() {
+  if (currentTime >= TOTAL) currentTime = 0;
+  isPlaying = true;
+  lastTick = null;
+  playIcon.innerHTML = ICON_PAUSE;
+  endOverlay.classList.remove('show');
+  rafId = requestAnimationFrame(tick);
+}
+
+function pause() {
+  isPlaying = false;
+  cancelAnimationFrame(rafId);
+  playIcon.innerHTML = ICON_PLAY;
+}
+
+function toggle() {
+  if (isPlaying) pause();
+  else play();
+}
+
+function seek(pct) {
+  currentTime = Math.max(0, Math.min(TOTAL, pct * TOTAL));
+  endOverlay.classList.remove('show');
+  // Reset scene tracking so transitions re-fire
+  currentScene = 0;
+  currentSubIdx = -1;
+  render();
+  // Force scene animations to replay by removing & re-adding 'active'
+  scenes.forEach(el => el.classList.remove('active'));
+  setTimeout(() => updateScene(currentTime), 50);
+}
+
+function startDemo() {
+  startOverlay.classList.add('hide');
+  setTimeout(() => play(), 350);
+}
+
+function replay() {
+  currentTime = 0;
+  currentScene = 0;
+  currentSubIdx = -1;
+  endOverlay.classList.remove('show');
+  scenes.forEach(el => el.classList.remove('active'));
+  render();
+  setTimeout(play, 100);
+}
+
+function showEndScreen() {
+  endOverlay.classList.add('show');
+}
+
+// ─── EVENT LISTENERS ────────────────────────────────────
+startOverlay.addEventListener('click', startDemo);
+playBtn.addEventListener('click', toggle);
+
+progressTrack.addEventListener('click', e => {
+  const rect = progressTrack.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  seek(pct);
+});
+
+// Keyboard controls
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); toggle(); }
+  if (e.code === 'KeyR')  replay();
+  if (e.code === 'ArrowLeft')  { currentTime = Math.max(0, currentTime - 5); render(); }
+  if (e.code === 'ArrowRight') { currentTime = Math.min(TOTAL, currentTime + 5); render(); }
+});
+
+// Initial render
+render();
+</script>
+
+</body>
+</html>
